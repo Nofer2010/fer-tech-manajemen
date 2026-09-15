@@ -35,7 +35,7 @@
         .modal-content { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: scale(0.9); }
         .modal-overlay.show .modal-content { transform: scale(1); }
         
-        /* Custom Scrollbar */
+        /* Custom Scrollbar (akan berlaku juga untuk scroll tabel) */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -144,7 +144,7 @@
                 <section id="view-dashboard" class="view-section">
                     <div class="mb-8">
                         <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white tracking-tight">Dashboard</h2>
-                        <p class="text-gray-500 dark:text-gray-400 mt-1">Ringkasan performa penjualan dan target Anda secara otomatis[span_1](start_span)[span_1](end_span).</p>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">Ringkasan performa penjualan dan target Anda secara otomatis.</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -198,7 +198,7 @@
 
                     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5 md:p-8 border border-gray-100 dark:border-slate-700 w-full">
                         <h3 class="font-bold text-gray-800 dark:text-white mb-2 text-lg">Grafik Performa Tahunan</h3>
-                        <p class="text-xs text-gray-400 dark:text-gray-500 mb-6">Membandingkan total omzet aktual (batang biru) dengan target bulanan (garis merah)[span_2](start_span)[span_2](end_span).</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 mb-6">Membandingkan total omzet aktual (batang biru) dengan target bulanan (garis merah).</p>
                         <div class="relative h-72 md:h-96 w-full">
                             <canvas id="dashboardChart"></canvas>
                         </div>
@@ -238,10 +238,12 @@
                         </div>
                         
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 overflow-hidden flex flex-col">
-                            <div class="overflow-x-auto">
+                            <!-- Container Table dengan Scroll Vertical & Horizontal -->
+                            <div class="overflow-auto max-h-[500px] w-full">
                                 <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-gray-50/80 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-slate-700">
+                                    <!-- Header Tabel menempel ke atas (Sticky) -->
+                                    <thead class="sticky top-0 z-10 shadow-sm">
+                                        <tr class="bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-slate-600">
                                             <th class="py-4 px-5 font-bold">Tanggal</th>
                                             <th class="py-4 px-5 font-bold">Omzet Manual</th>
                                             <th class="py-4 px-5 font-bold">Keterangan</th>
@@ -283,10 +285,12 @@
                         </div>
                         
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 overflow-hidden">
-                            <div class="overflow-x-auto">
+                            <!-- Container Table dengan Scroll Vertical & Horizontal -->
+                            <div class="overflow-auto max-h-[500px] w-full">
                                 <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-gray-50/80 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-slate-700">
+                                    <!-- Header Tabel menempel ke atas (Sticky) -->
+                                    <thead class="sticky top-0 z-10 shadow-sm">
+                                        <tr class="bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-slate-600">
                                             <th class="py-4 px-5 font-bold">Bulan</th>
                                             <th class="py-4 px-5 font-bold">Target</th>
                                             <th class="py-4 px-5 font-bold">Tercapai (Gabungan)</th>
@@ -362,10 +366,12 @@
                                     <option value="">Semua Kategori</option>
                                 </select>
                             </div>
-                            <div class="overflow-x-auto flex-1">
+                            <!-- Container Table dengan Scroll Vertical & Horizontal -->
+                            <div class="overflow-auto max-h-[500px] flex-1 w-full">
                                 <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-gray-50/80 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-slate-700">
+                                    <!-- Header Tabel menempel ke atas (Sticky) -->
+                                    <thead class="sticky top-0 z-10 shadow-sm">
+                                        <tr class="bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-slate-600">
                                             <th class="py-4 px-5 font-bold">Kategori</th>
                                             <th class="py-4 px-5 font-bold">Nama Produk</th>
                                             <th class="py-4 px-5 font-bold">Qty</th>
@@ -425,10 +431,12 @@
                         </div>
                         
                         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 lg:col-span-2 overflow-hidden flex flex-col">
-                            <div class="overflow-x-auto">
+                            <!-- Container Table dengan Scroll Vertical & Horizontal -->
+                            <div class="overflow-auto max-h-[500px] w-full">
                                 <table class="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr class="bg-gray-50/80 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-slate-700">
+                                    <!-- Header Tabel menempel ke atas (Sticky) -->
+                                    <thead class="sticky top-0 z-10 shadow-sm">
+                                        <tr class="bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-gray-200 dark:border-slate-600">
                                             <th class="py-4 px-5 font-bold">Tanggal</th>
                                             <th class="py-4 px-5 font-bold">Produk</th>
                                             <th class="py-4 px-5 font-bold">Qty</th>
