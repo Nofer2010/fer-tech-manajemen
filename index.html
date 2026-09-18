@@ -58,7 +58,7 @@
         }
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
 
-        /* Sticky Page Header Styling (Solid Background to prevent text overlap) */
+        /* Sticky Page Header Styling */
         .sticky-header {
             position: sticky;
             top: 0;
@@ -74,6 +74,17 @@
             background-color: #111827;
             border-bottom: 1px solid #374151;
             box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- GUEST MODE CSS (Read-Only) --- */
+        body.guest-mode .form-card { display: none !important; }
+        body.guest-mode .action-col { display: none !important; }
+        body.guest-mode .guest-hide { display: none !important; }
+        @media (min-width: 1024px) {
+            body.guest-mode .table-card { grid-column: span 3 / span 3 !important; }
+        }
+        @media (min-width: 1280px) {
+            body.guest-mode .table-card-xl { grid-column: span 3 / span 3 !important; }
         }
     </style>
 </head>
@@ -127,6 +138,10 @@
                 <button type="submit" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all flex justify-center items-center gap-2 mt-2">
                     <span>Masuk</span>
                     <i class="fas fa-arrow-right"></i>
+                </button>
+                <button type="button" id="btn-guest" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-3 rounded-xl transition-all shadow-sm mt-3 flex justify-center items-center gap-2">
+                    <i class="fas fa-user-secret"></i>
+                    <span>Masuk sebagai Tamu (View-Only)</span>
                 </button>
                 <div class="text-center mt-4 text-xs text-gray-400 dark:text-gray-500">
                     <p>Autentikasi aman via Firebase</p>
@@ -238,8 +253,8 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Form -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit">
+                        <!-- Form Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit form-card">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-500"></i> <span id="omzet-form-title">Tambah Omzet</span></h3>
                             <form id="form-omzet" class="space-y-4">
                                 <input type="hidden" id="omzet-id">
@@ -262,8 +277,8 @@
                             </form>
                         </div>
                         
-                        <!-- Table -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full">
+                        <!-- Table Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full table-card">
                             <div class="overflow-x-auto w-full max-h-[500px]">
                                 <table class="w-full text-left border-collapse whitespace-nowrap">
                                     <thead class="sticky top-0 bg-gray-50 dark:bg-gray-700 z-10">
@@ -271,7 +286,7 @@
                                             <th class="py-4 px-5 font-semibold">Tanggal</th>
                                             <th class="py-4 px-5 font-semibold">Omzet</th>
                                             <th class="py-4 px-5 font-semibold">Keterangan</th>
-                                            <th class="py-4 px-5 font-semibold text-right">Aksi</th>
+                                            <th class="py-4 px-5 font-semibold text-right action-col">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="omzet-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
@@ -295,8 +310,8 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Form -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit">
+                        <!-- Form Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit form-card">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-bullseye text-blue-500"></i> Set Target Bulan Ini</h3>
                             <form id="form-target" class="space-y-4">
                                 <div>
@@ -311,8 +326,8 @@
                             </form>
                         </div>
                         
-                        <!-- Table/Progress -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden w-full max-w-full">
+                        <!-- Table/Progress Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden w-full max-w-full table-card">
                             <div class="overflow-x-auto w-full max-h-[500px]">
                                 <table class="w-full text-left border-collapse whitespace-nowrap">
                                     <thead class="sticky top-0 bg-gray-50 dark:bg-gray-700 z-10">
@@ -342,8 +357,8 @@
                     </div>
 
                     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                        <!-- Form -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 xl:col-span-1 h-fit">
+                        <!-- Form Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 xl:col-span-1 h-fit form-card">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-box-open text-blue-500"></i> <span id="produk-form-title">Tambah Produk</span></h3>
                             <form id="form-produk" class="space-y-4">
                                 <input type="hidden" id="produk-id">
@@ -384,8 +399,8 @@
                             </form>
                         </div>
                         
-                        <!-- Table -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 xl:col-span-2 overflow-hidden flex flex-col w-full max-w-full">
+                        <!-- Table Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 xl:col-span-2 overflow-hidden flex flex-col w-full max-w-full table-card-xl">
                             <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-800/80">
                                 <div class="relative flex-1 w-full max-w-full sm:max-w-xs">
                                     <i class="fas fa-search absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -403,7 +418,7 @@
                                             <th class="py-3 px-5 font-semibold min-w-[180px]">Nama Produk</th>
                                             <th class="py-3 px-5 font-semibold">Qty</th>
                                             <th class="py-3 px-5 font-semibold">Volume/Berat</th>
-                                            <th class="py-3 px-5 font-semibold text-right">Aksi</th>
+                                            <th class="py-3 px-5 font-semibold text-right action-col">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="produk-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
@@ -423,8 +438,8 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Form -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit">
+                        <!-- Form Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit form-card">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-file-invoice-dollar text-blue-500"></i> <span id="laporan-form-title">Tambah Laporan</span></h3>
                             <form id="form-laporan" class="space-y-4">
                                 <input type="hidden" id="laporan-id">
@@ -459,8 +474,8 @@
                             </form>
                         </div>
                         
-                        <!-- Table -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full">
+                        <!-- Table Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full table-card">
                             <div class="overflow-x-auto w-full max-h-[500px]">
                                 <table class="w-full text-left border-collapse whitespace-nowrap">
                                     <thead class="sticky top-0 bg-gray-50 dark:bg-gray-700 z-10">
@@ -469,7 +484,7 @@
                                             <th class="py-4 px-5 font-semibold min-w-[150px]">Produk</th>
                                             <th class="py-4 px-5 font-semibold">Qty</th>
                                             <th class="py-4 px-5 font-semibold">Total Rp</th>
-                                            <th class="py-4 px-5 font-semibold text-right">Aksi</th>
+                                            <th class="py-4 px-5 font-semibold text-right action-col">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="laporan-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
@@ -488,7 +503,7 @@
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Produk Fokus</h2>
                             <p class="text-gray-500 dark:text-gray-400 text-sm">Pantau performa penjualan produk unggulan Anda.</p>
                         </div>
-                        <button onclick="openModalFokus()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                        <button onclick="openModalFokus()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2 guest-hide">
                             <i class="fas fa-plus"></i> Tambah Produk Fokus
                         </button>
                     </div>
@@ -546,8 +561,17 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // KONFIGURASI MODE TAMU (BACA DENGAN TELITI)
+        // ==========================================
+        const GUEST_EMAIL = "iffan@tlnippon.com"; 
+        const GUEST_PASS = "Tlnippon123"
+        const ADMIN_UID = "y2ZwM5LvARRHf6sZnncD76tb4hv2"; 
+        // Ganti teks "TARUH_UID_AKUN_UTAMA_DISINI" dengan User UID akun ferdianockt... yang ada di Firebase Console.
+        // ==========================================
 
         const firebaseConfig = {
             apiKey: "AIzaSyD26J8tx8RfSxQP9Acd_ehNU7ol_1Wsrlc",
@@ -565,7 +589,7 @@
 
         // Global State
         const state = {
-            user: null, userId: null,
+            user: null, userId: null, isGuest: false,
             omzet: [], targets: [], produk: [], laporan: [], fokus: [],
             unsubscribes: [], dashboardChart: null
         };
@@ -595,7 +619,6 @@
             }
         }
 
-        // Initialize Theme from LocalStorage or System Preference
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             updateThemeUI(true);
         } else {
@@ -607,7 +630,7 @@
                 const isDark = document.documentElement.classList.toggle('dark');
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
                 updateThemeUI(isDark);
-                if(state.dashboardChart) { renderDashboard(); } // Redraw chart for new theme colors
+                if(state.dashboardChart) { renderDashboard(); } 
             });
         }
         // -------------------------
@@ -678,7 +701,6 @@
             
             if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
             
-            // Reset scroll area to top when switching views
             const scrollArea = document.getElementById('main-scroll-area');
             if(scrollArea) scrollArea.scrollTop = 0;
 
@@ -693,6 +715,7 @@
             });
         });
 
+        // --- LOGIN BIASA ---
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-login');
@@ -702,18 +725,30 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
-            try { await signInWithEmailAndPassword(auth, email, password); } 
-            catch (error) {
-                try {
-                     await signInAnonymously(auth);
-                     showToast("Berhasil masuk mode Tamu", 'success');
-                } catch (anonErr) {
-                     showToast("Gagal. Periksa email/password.", 'error');
-                     btn.innerHTML = '<span>Masuk</span><i class="fas fa-arrow-right"></i>';
-                     btn.disabled = false;
-                }
+            try { 
+                await signInWithEmailAndPassword(auth, email, password); 
+            } catch (error) {
+                showToast("Gagal. Periksa email/password.", 'error');
+                btn.innerHTML = '<span>Masuk</span><i class="fas fa-arrow-right"></i>';
+                btn.disabled = false;
             }
         });
+
+                    // --- LOGIN TAMU (READ ONLY) ---
+          document.getElementById('btn-guest')?.addEventListener('click', async () => {
+          const btn = document.getElementById('btn-guest');
+     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
+    btn.disabled = true;
+    try {
+        // Login otomatis pakai akun tamu
+        await signInWithEmailAndPassword(auth, GUEST_EMAIL, GUEST_PASS);
+        showToast("Berhasil masuk mode Tamu", 'success');
+    } catch (error) {
+        showToast("Gagal login tamu. Pastikan akun sudah dibuat di Firebase!", 'error');
+        btn.innerHTML = '<i class="fas fa-user-secret"></i> <span>Masuk sebagai Tamu (View-Only)</span>';
+        btn.disabled = false;
+    }
+});
 
         document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
 
@@ -722,17 +757,40 @@
             setTimeout(() => {
                 viewLoading.classList.add('hide'); 
                 if (user) {
-                    state.user = user; state.userId = user.uid;
-                    viewLogin.classList.add('hide'); viewApp.classList.remove('hide');
-                    document.getElementById('user-id-display').innerText = user.email || `ID: ${user.uid.substring(0,6)}`;
+                    state.user = user; 
+                    
+                    // Cek apakah login pakai akun Tamu
+                    state.isGuest = (user.email === GUEST_EMAIL);
+                    
+                    // Kalau Tamu, pakai UID Admin supaya bisa baca laporannya. Kalau bukan, pakai UID sendiri.
+                    state.userId = state.isGuest ? ADMIN_UID : user.uid;
+
+                    viewLogin.classList.add('hide'); 
+                    viewApp.classList.remove('hide');
+
+                    // Sembunyikan form & tombol jika ini adalah tamu
+                    if (state.isGuest) {
+                        document.body.classList.add('guest-mode');
+                        document.getElementById('user-id-display').innerText = "Mode Tamu (Read-Only)";
+                    } else {
+                        document.body.classList.remove('guest-mode');
+                        document.getElementById('user-id-display').innerText = user.email || `ID: ${user.uid.substring(0,6)}`;
+                    }
+
                     document.getElementById('login-form').reset();
                     initDataListeners(); switchView('dashboard');
                 } else {
-                    state.user = null; state.userId = null;
+                    state.user = null; state.userId = null; state.isGuest = false;
                     viewApp.classList.add('hide'); viewLogin.classList.remove('hide');
                     cleanupListeners();
                     const btn = document.getElementById('btn-login');
                     btn.innerHTML = '<span>Masuk</span><i class="fas fa-arrow-right"></i>'; btn.disabled = false;
+                    
+                    const btnGuest = document.getElementById('btn-guest');
+                    if (btnGuest) {
+                        btnGuest.innerHTML = '<i class="fas fa-user-secret"></i> <span>Masuk sebagai Tamu (View-Only)</span>';
+                        btnGuest.disabled = false;
+                    }
                 }
             }, 500); 
         });
@@ -786,7 +844,7 @@
 
         formOmzet.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!state.user) return;
+            if (!state.user || state.isGuest) return;
             const id = document.getElementById('omzet-id').value;
             const data = {
                 date: document.getElementById('omzet-date').value,
@@ -820,7 +878,7 @@
                     <td class="py-3 px-5 dark:text-gray-200">${item.date}</td>
                     <td class="py-3 px-5 font-bold text-gray-800 dark:text-white">${formatIDR(item.amount)}</td>
                     <td class="py-3 px-5 text-gray-500 dark:text-gray-400">${item.note || '-'}</td>
-                    <td class="py-3 px-5 text-right">
+                    <td class="py-3 px-5 text-right action-col">
                         <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-omzet" data-id="${item.id}"><i class="fas fa-edit"></i></button>
                         <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-omzet" data-id="${item.id}"><i class="fas fa-trash"></i></button>
                     </td>
@@ -830,6 +888,7 @@
 
             document.querySelectorAll('.btn-edit-omzet').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    if (state.isGuest) return;
                     const item = state.omzet.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
                         document.getElementById('omzet-id').value = item.id;
@@ -845,6 +904,7 @@
 
             document.querySelectorAll('.btn-del-omzet').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    if (state.isGuest) return;
                     showConfirm('Hapus Omzet', 'Data omzet harian ini akan dihapus permanen.', async () => {
                         if(!state.user) return;
                         await deleteDoc(getDocRef('omzet', e.currentTarget.dataset.id));
@@ -862,7 +922,7 @@
 
         formTarget.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!state.user) return;
+            if (!state.user || state.isGuest) return;
             const monthVal = document.getElementById('target-month').value;
             const amountVal = parseFloat(document.getElementById('target-amount').value);
             const existing = state.targets.find(t => t.month === monthVal);
@@ -966,7 +1026,7 @@
 
         formProduk.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user) return;
+            if(!state.user || state.isGuest) return;
             const id = document.getElementById('produk-id').value;
             const kategori = isNewKategori ? inputKategoriNew.value.trim() : selKategori.value;
             if(!kategori) { showToast("Kategori harus diisi", "error"); return; }
@@ -1013,7 +1073,7 @@
                         <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-bold ${p.qty > 5 ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'} shadow-sm">${p.qty}</span>
                     </td>
                     <td class="py-3 px-5 text-gray-600 dark:text-gray-300 whitespace-nowrap">${p.volume} <span class="text-xs font-bold">${p.satuan}</span></td>
-                    <td class="py-3 px-5 text-right whitespace-nowrap">
+                    <td class="py-3 px-5 text-right whitespace-nowrap action-col">
                         <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-produk" data-id="${p.id}"><i class="fas fa-edit"></i></button>
                         <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-produk" data-id="${p.id}"><i class="fas fa-trash"></i></button>
                     </td>
@@ -1023,6 +1083,7 @@
 
             document.querySelectorAll('.btn-edit-produk').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    if (state.isGuest) return;
                     const item = state.produk.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
                         document.getElementById('produk-id').value = item.id; document.getElementById('produk-nama').value = item.nama;
@@ -1038,6 +1099,7 @@
 
             document.querySelectorAll('.btn-del-produk').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    if (state.isGuest) return;
                     showConfirm('Hapus Produk', 'Aksi ini tidak akan menghapus riwayat laporan penjualan sebelumnya.', async () => {
                         if(!state.user) return;
                         const id = e.currentTarget.dataset.id;
@@ -1065,7 +1127,7 @@
 
         formLaporan.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user) return;
+            if(!state.user || state.isGuest) return;
             const id = document.getElementById('laporan-id').value;
             const productId = document.getElementById('laporan-produk').value;
             const qtySold = parseInt(lapQty.value); const price = parseFloat(lapHarga.value);
@@ -1108,7 +1170,7 @@
                     </td>
                     <td class="py-3 px-5 font-semibold text-gray-800 dark:text-gray-200">${l.qtySold}</td>
                     <td class="py-3 px-5 font-bold text-green-600 dark:text-green-400 whitespace-nowrap">${formatIDR(l.total)}</td>
-                    <td class="py-3 px-5 text-right whitespace-nowrap">
+                    <td class="py-3 px-5 text-right whitespace-nowrap action-col">
                         <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-laporan" data-id="${l.id}"><i class="fas fa-edit"></i></button>
                         <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-laporan" data-id="${l.id}"><i class="fas fa-trash"></i></button>
                     </td>
@@ -1118,6 +1180,7 @@
 
             document.querySelectorAll('.btn-edit-laporan').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    if (state.isGuest) return;
                     const item = state.laporan.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
                         document.getElementById('laporan-id').value = item.id; document.getElementById('laporan-date').value = item.date;
@@ -1131,6 +1194,7 @@
 
             document.querySelectorAll('.btn-del-laporan').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    if (state.isGuest) return;
                     showConfirm('Hapus Laporan', 'Yakin ingin menghapus laporan ini? Stok yang berkurang tidak dikembalikan otomatis.', async () => {
                         if(!state.user) return;
                         await deleteDoc(getDocRef('laporan', e.currentTarget.dataset.id));
@@ -1143,7 +1207,7 @@
         /* --- FOKUS --- */
         document.getElementById('form-fokus').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user) return;
+            if(!state.user || state.isGuest) return;
             const productId = document.getElementById('fokus-produk-select').value;
             if(state.fokus.some(f => f.productId === productId)) { showToast("Produk sudah ada di daftar", 'error'); return; }
             try {
@@ -1168,7 +1232,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all relative transform hover:-translate-y-1";
                 card.innerHTML = `
-                    <button class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors btn-del-fokus w-8 h-8 rounded-full hover:bg-red-500 flex items-center justify-center z-10" data-id="${f.id}" title="Hapus dari fokus"><i class="fas fa-times"></i></button>
+                    <button class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors btn-del-fokus w-8 h-8 rounded-full hover:bg-red-500 flex items-center justify-center z-10 action-col" data-id="${f.id}" title="Hapus dari fokus"><i class="fas fa-times"></i></button>
                     <div class="p-6 border-b border-gray-50 dark:border-gray-700 relative overflow-hidden">
                         <div class="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-full opacity-50"></div>
                         <div class="text-xs text-blue-600 dark:text-blue-400 font-black mb-1.5 tracking-widest uppercase relative">${p.kategori}</div>
@@ -1190,7 +1254,7 @@
             });
             document.querySelectorAll('.btn-del-fokus').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
-                    if(!state.user) return;
+                    if(!state.user || state.isGuest) return;
                     await deleteDoc(getDocRef('fokus', e.currentTarget.dataset.id));
                     showToast('Produk berhenti dipantau');
                 });
