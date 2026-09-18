@@ -212,7 +212,8 @@
                 <section id="view-target" class="view-section hide">
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold text-gray-800">Target Bulanan</h2>
-                        <p class="text-gray-500 text-sm">Tetapkan target manual per bulan dan pantau persentasenya.</p>
+                        <!-- Perubahan teks keterangan -->
+                        <p class="text-gray-500 text-sm">Tetapkan target manual per bulan dan pantau persentase pencapaian (Khusus Kategori CCM).</p>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -240,7 +241,8 @@
                                         <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
                                             <th class="py-3 px-4 font-medium">Bulan</th>
                                             <th class="py-3 px-4 font-medium">Target</th>
-                                            <th class="py-3 px-4 font-medium">Tercapai (Gabungan)</th>
+                                            <!-- Perubahan judul kolom -->
+                                            <th class="py-3 px-4 font-medium">Tercapai (Khusus CCM)</th>
                                             <th class="py-3 px-4 font-medium">Progres</th>
                                         </tr>
                                     </thead>
@@ -462,23 +464,24 @@
     <!-- Toast Notification -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-[70] flex flex-col gap-2 pointer-events-none"></div>
 
-    <script type="module">
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Environment variables
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'paint-crm-demo';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { /* Fallback config not needed if strictly in env */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyD26J8tx8RfSxQP9Acd_ehNU7ol_1Wsrlc",
+            authDomain: "fer-tech-manajemen.firebaseapp.com",
+            projectId: "fer-tech-manajemen",
+            storageBucket: "fer-tech-manajemen.firebasestorage.app",
+            messagingSenderId: "1085012735015",
+            appId: "1:1085012735015:web:80877121662fe8c37d0a02",
+            measurementId: "G-LS8453ZQBK"
+        };
         
-        let app, db, auth;
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-        } catch (e) {
-            console.error("Firebase init error", e);
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
         // Global State
         const state = {
@@ -489,11 +492,10 @@
             produk: [],
             laporan: [],
             fokus: [],
-            unsubscribes: [], // To clean up listeners
+            unsubscribes: [],
             dashboardChart: null
         };
 
-        // DOM Elements - General
         const viewLogin = document.getElementById('login-view');
         const viewApp = document.getElementById('app-view');
         const sidebar = document.getElementById('sidebar');
@@ -512,7 +514,6 @@
             toast.innerHTML = `${icon} <span class="text-sm font-medium text-gray-700">${message}</span>`;
             toastContainer.appendChild(toast);
             
-            // Trigger animation
             requestAnimationFrame(() => toast.classList.add('show'));
             
             setTimeout(() => {
@@ -521,7 +522,6 @@
             }, 3000);
         }
 
-        // Custom Confirm Modal
         let confirmAction = null;
         const confirmModal = document.getElementById('modal-confirm');
         document.getElementById('confirm-cancel').addEventListener('click', () => { confirmModal.classList.add('hide'); confirmAction = null; });
@@ -537,7 +537,6 @@
             confirmModal.classList.remove('hide');
         }
 
-        // Login toggle password
         document.getElementById('toggle-password').addEventListener('click', function() {
             const input = document.getElementById('login-password');
             const icon = this.querySelector('i');
@@ -550,11 +549,9 @@
             }
         });
 
-        // Sidebar logic
         btnOpenSidebar.addEventListener('click', () => sidebar.classList.remove('-translate-x-full'));
         btnCloseSidebar.addEventListener('click', () => sidebar.classList.add('-translate-x-full'));
 
-        // View routing
         function switchView(targetId) {
             viewSections.forEach(sec => sec.classList.add('hide'));
             navLinks.forEach(link => link.classList.remove('sidebar-active', 'bg-gray-50'));
@@ -563,7 +560,7 @@
             const activeLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
             if (activeLink) activeLink.classList.add('sidebar-active', 'bg-gray-50');
             
-            if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full'); // Auto close on mobile
+            if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
             
             if (targetId === 'dashboard') renderDashboard();
         }
@@ -581,18 +578,22 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
             btn.disabled = true;
 
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
             try {
-                // Obey strict environment rules for auth mapping
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 console.error("Auth failed:", error);
-                showToast("Login gagal. Coba lagi.", 'error');
-                btn.innerHTML = '<span>Masuk</span><i class="fas fa-arrow-right"></i>';
-                btn.disabled = false;
+                
+                try {
+                     await signInAnonymously(auth);
+                     showToast("Berhasil masuk menggunakan mode Tamu", 'success');
+                } catch (anonErr) {
+                     showToast("Login gagal. Periksa email/password atau koneksi.", 'error');
+                     btn.innerHTML = '<span>Masuk</span><i class="fas fa-arrow-right"></i>';
+                     btn.disabled = false;
+                }
             }
         });
 
@@ -607,7 +608,7 @@
                 viewLogin.classList.add('hide');
                 viewApp.classList.remove('hide');
                 
-                document.getElementById('user-id-display').innerText = `ID: ${user.uid.substring(0,6)}...`;
+                document.getElementById('user-id-display').innerText = user.email || `ID: ${user.uid.substring(0,6)}...`;
                 document.getElementById('login-form').reset();
                 
                 initDataListeners();
@@ -624,29 +625,28 @@
         });
 
         function getColRef(colName) {
-            // STRICT RULE 1: /artifacts/{appId}/users/{userId}/{collectionName}
-            return collection(db, 'artifacts', appId, 'users', state.userId, colName);
+            return collection(db, 'users', state.userId, colName);
+        }
+        function getDocRef(colName, id) {
+            return doc(db, 'users', state.userId, colName, id);
         }
 
         function initDataListeners() {
-            cleanupListeners(); // Clear old listeners if any
+            cleanupListeners(); 
 
-            // Omzet listener
             state.unsubscribes.push(onSnapshot(query(getColRef('omzet')), (snapshot) => {
-                state.omzet = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.date.localeCompare(a.date)); // Sort DESC in memory
+                state.omzet = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.date.localeCompare(a.date));
                 renderOmzet();
                 if (!document.getElementById('view-dashboard').classList.contains('hide')) renderDashboard();
                 if (!document.getElementById('view-target').classList.contains('hide')) renderTarget();
             }, (error) => console.error("Omzet sync error:", error)));
 
-            // Targets listener
             state.unsubscribes.push(onSnapshot(query(getColRef('targets')), (snapshot) => {
                 state.targets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.month.localeCompare(a.month));
                 renderTarget();
                 if (!document.getElementById('view-dashboard').classList.contains('hide')) renderDashboard();
             }, (error) => console.error("Target sync error:", error)));
 
-            // Produk listener
             state.unsubscribes.push(onSnapshot(query(getColRef('produk')), (snapshot) => {
                 state.produk = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => a.nama.localeCompare(b.nama));
                 updateProdukDropdowns();
@@ -654,17 +654,14 @@
                 renderFokus();
             }, (error) => console.error("Produk sync error:", error)));
 
-            // Laporan listener
             state.unsubscribes.push(onSnapshot(query(getColRef('laporan')), (snapshot) => {
                 state.laporan = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.date.localeCompare(a.date));
                 renderLaporan();
                 renderFokus();
-                // FIX: Men-trigger pembaruan Dashboard dan Target Bulanan
                 if (!document.getElementById('view-dashboard').classList.contains('hide')) renderDashboard();
                 if (!document.getElementById('view-target').classList.contains('hide')) renderTarget();
             }, (error) => console.error("Laporan sync error:", error)));
 
-            // Fokus listener
             state.unsubscribes.push(onSnapshot(query(getColRef('fokus')), (snapshot) => {
                 state.fokus = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderFokus();
@@ -678,8 +675,6 @@
 
         const formOmzet = document.getElementById('form-omzet');
         const tBodyOmzet = document.getElementById('omzet-tbody');
-        
-        // Auto-fill today's date
         document.getElementById('omzet-date').valueAsDate = new Date();
 
         formOmzet.addEventListener('submit', async (e) => {
@@ -695,7 +690,7 @@
 
             try {
                 if (id) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'omzet', id), data);
+                    await updateDoc(getDocRef('omzet', id), data);
                     showToast("Omzet berhasil diperbarui");
                 } else {
                     await addDoc(getColRef('omzet'), data);
@@ -704,7 +699,6 @@
                 resetFormOmzet();
             } catch (err) {
                 showToast("Gagal menyimpan data", 'error');
-                console.error(err);
             }
         });
 
@@ -760,7 +754,7 @@
                     const id = e.currentTarget.dataset.id;
                     showConfirm('Hapus Omzet', 'Data omzet harian ini akan dihapus permanen.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'omzet', id));
+                        await deleteDoc(getDocRef('omzet', id));
                         showToast('Data dihapus');
                     });
                 });
@@ -769,8 +763,6 @@
 
         const formTarget = document.getElementById('form-target');
         const tBodyTarget = document.getElementById('target-tbody');
-        
-        // Auto-fill current month
         const now = new Date();
         document.getElementById('target-month').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
@@ -780,41 +772,40 @@
             
             const monthVal = document.getElementById('target-month').value;
             const amountVal = parseFloat(document.getElementById('target-amount').value);
-            
-            // Check if month already exists
             const existing = state.targets.find(t => t.month === monthVal);
 
             try {
                 if (existing) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'targets', existing.id), { amount: amountVal });
+                    await updateDoc(getDocRef('targets', existing.id), { amount: amountVal });
                     showToast("Target diperbarui");
                 } else {
                     await addDoc(getColRef('targets'), { month: monthVal, amount: amountVal });
                     showToast("Target ditambahkan");
                 }
                 formTarget.reset();
-                document.getElementById('target-month').value = monthVal; // restore
+                document.getElementById('target-month').value = monthVal;
             } catch (err) {
                 showToast("Gagal menyimpan target", 'error');
             }
         });
 
+        // PERBAIKAN: Fungsi Target Bulanan Khusus Kategori CCM
         function renderTarget() {
             tBodyTarget.innerHTML = '';
-            
-            // Calculate Omzet per month for comparison
             const omzetPerMonth = {};
             
-            // 1. Tambahkan pencapaian dari Omzet Manual
-            state.omzet.forEach(o => {
-                const m = o.date.substring(0, 7); // YYYY-MM
-                omzetPerMonth[m] = (omzetPerMonth[m] || 0) + o.amount;
-            });
+            // Catatan: state.omzet (Omzet Manual) diabaikan karena hanya menghitung CCM
             
-            // 2. Tambahkan pencapaian dari Input Laporan (CCM)
+            // Hanya menghitung dari Input Laporan (CCM)
             state.laporan.forEach(l => {
-                const m = l.date.substring(0, 7);
-                omzetPerMonth[m] = (omzetPerMonth[m] || 0) + l.total;
+                // Cari produk berdasarkan ID untuk melihat kategorinya
+                const product = state.produk.find(p => p.id === l.productId);
+                
+                // Cek apakah produk ditemukan dan memiliki kategori 'CCM' (case-insensitive)
+                if (product && product.kategori && product.kategori.trim().toUpperCase() === 'CCM') {
+                    const m = l.date.substring(0, 7);
+                    omzetPerMonth[m] = (omzetPerMonth[m] || 0) + l.total;
+                }
             });
 
             state.targets.forEach(item => {
@@ -866,34 +857,24 @@
         });
 
         function updateProdukDropdowns() {
-            // Get distinct categories
             const categories = [...new Set(state.produk.map(p => p.kategori))].filter(Boolean).sort();
-            
-            // Update Select in Form
             const currentVal = selKategori.value;
             selKategori.innerHTML = '<option value="">-- Pilih Kategori --</option>';
-            categories.forEach(c => {
-                selKategori.innerHTML += `<option value="${c}">${c}</option>`;
-            });
+            categories.forEach(c => { selKategori.innerHTML += `<option value="${c}">${c}</option>`; });
             if (categories.includes(currentVal)) selKategori.value = currentVal;
 
-            // Update Filter
             const filterCat = document.getElementById('produk-filter-kategori');
             const currentFilter = filterCat.value;
             filterCat.innerHTML = '<option value="">Semua Kategori</option>';
-            categories.forEach(c => {
-                filterCat.innerHTML += `<option value="${c}">${c}</option>`;
-            });
+            categories.forEach(c => { filterCat.innerHTML += `<option value="${c}">${c}</option>`; });
             filterCat.value = currentFilter;
 
-            // Update Laporan & Fokus Selects
             const selectLaporan = document.getElementById('laporan-produk');
             const selectFokus = document.getElementById('fokus-produk-select');
             
             const renderProductOptions = (selectElem, retainVal = true) => {
                 const v = selectElem.value;
                 selectElem.innerHTML = '<option value="">-- Pilih Produk --</option>';
-                // Group by category optically
                 categories.forEach(cat => {
                     const optgroup = document.createElement('optgroup');
                     optgroup.label = cat;
@@ -905,9 +886,7 @@
                     });
                     selectElem.appendChild(optgroup);
                 });
-                if (retainVal && selectElem.querySelector(`option[value="${v}"]`)) {
-                    selectElem.value = v;
-                }
+                if (retainVal && selectElem.querySelector(`option[value="${v}"]`)) { selectElem.value = v; }
             };
             
             renderProductOptions(selectLaporan);
@@ -921,10 +900,7 @@
             const id = document.getElementById('produk-id').value;
             const kategori = isNewKategori ? inputKategoriNew.value.trim() : selKategori.value;
             
-            if(!kategori) {
-                showToast("Kategori harus diisi", "error");
-                return;
-            }
+            if(!kategori) { showToast("Kategori harus diisi", "error"); return; }
 
             const data = {
                 kategori,
@@ -936,16 +912,14 @@
 
             try {
                 if(id) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'produk', id), data);
+                    await updateDoc(getDocRef('produk', id), data);
                     showToast("Produk diperbarui");
                 } else {
                     await addDoc(getColRef('produk'), data);
                     showToast("Produk ditambahkan");
                 }
                 resetFormProduk();
-            } catch (err) {
-                showToast("Gagal menyimpan produk", "error");
-            }
+            } catch (err) { showToast("Gagal menyimpan produk", "error"); }
         });
 
         function resetFormProduk() {
@@ -953,12 +927,11 @@
             document.getElementById('produk-id').value = '';
             document.getElementById('produk-form-title').innerText = 'Tambah Produk';
             document.getElementById('produk-reset').classList.add('hide');
-            if(isNewKategori) btnAddKategori.click(); // Reset category toggle
+            if(isNewKategori) btnAddKategori.click();
         }
 
         document.getElementById('produk-reset').addEventListener('click', resetFormProduk);
         
-        // Search & Filter state
         let produkSearch = '';
         let produkFilter = '';
         document.getElementById('produk-search').addEventListener('input', e => { produkSearch = e.target.value.toLowerCase(); renderProduk(); });
@@ -1001,8 +974,7 @@
                         document.getElementById('produk-volume').value = item.volume;
                         document.getElementById('produk-satuan').value = item.satuan;
                         
-                        // Handle category
-                        if (isNewKategori) btnAddKategori.click(); // revert to select
+                        if (isNewKategori) btnAddKategori.click();
                         selKategori.value = item.kategori;
                         
                         document.getElementById('produk-form-title').innerText = 'Edit Produk';
@@ -1016,10 +988,9 @@
                     const id = e.currentTarget.dataset.id;
                     showConfirm('Hapus Produk', 'Aksi ini tidak akan menghapus laporan penjualan yang terkait.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'produk', id));
-                        // Also remove from fokus if exists
+                        await deleteDoc(getDocRef('produk', id));
                         const f = state.fokus.find(f => f.productId === id);
-                        if(f) await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'fokus', f.id));
+                        if(f) await deleteDoc(getDocRef('fokus', f.id));
                         showToast('Produk dihapus');
                     });
                 });
@@ -1029,7 +1000,6 @@
         const formLaporan = document.getElementById('form-laporan');
         document.getElementById('laporan-date').valueAsDate = new Date();
         
-        // Auto Calculate Total
         const lapQty = document.getElementById('laporan-qty');
         const lapHarga = document.getElementById('laporan-harga');
         const lapTotal = document.getElementById('laporan-total-preview');
@@ -1051,10 +1021,7 @@
             const qtySold = parseInt(lapQty.value);
             const price = parseFloat(lapHarga.value);
 
-            if(!productId) {
-                showToast('Pilih produk terlebih dahulu', 'error');
-                return;
-            }
+            if(!productId) { showToast('Pilih produk terlebih dahulu', 'error'); return; }
 
             const product = state.produk.find(p => p.id === productId);
             if(!product) return;
@@ -1072,25 +1039,17 @@
 
             try {
                 if(id) {
-                    await updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'laporan', id), data);
+                    await updateDoc(getDocRef('laporan', id), data);
                     showToast('Laporan diperbarui');
                 } else {
                     await addDoc(getColRef('laporan'), data);
-                    
-                    // Deduct stock conditionally based on business logic. 
                     if (product.qty >= qtySold) {
-                        await updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'produk', productId), {
-                            qty: product.qty - qtySold
-                        });
+                        await updateDoc(getDocRef('produk', productId), { qty: product.qty - qtySold });
                     }
-                    
                     showToast('Laporan ditambahkan');
                 }
                 resetFormLaporan();
-            } catch (err) {
-                console.error(err);
-                showToast('Gagal menyimpan laporan', 'error');
-            }
+            } catch (err) { showToast('Gagal menyimpan laporan', 'error'); }
         });
 
         function resetFormLaporan() {
@@ -1146,7 +1105,7 @@
                     const id = e.currentTarget.dataset.id;
                     showConfirm('Hapus Laporan', 'Yakin ingin menghapus laporan ini? Stok tidak akan dikembalikan otomatis.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'laporan', id));
+                        await deleteDoc(getDocRef('laporan', id));
                         showToast('Laporan dihapus');
                     });
                 });
@@ -1162,7 +1121,6 @@
             if(!state.user) return;
             const productId = document.getElementById('fokus-produk-select').value;
             
-            // Check if already in fokus
             if(state.fokus.some(f => f.productId === productId)) {
                 showToast("Produk sudah ada di daftar fokus", 'error');
                 return;
@@ -1173,9 +1131,7 @@
                 showToast("Berhasil ditambahkan ke fokus");
                 modalFokus.classList.add('hide');
                 document.getElementById('form-fokus').reset();
-            } catch (err) {
-                showToast("Gagal menambah fokus", 'error');
-            }
+            } catch (err) { showToast("Gagal menambah fokus", 'error'); }
         });
 
         function renderFokus() {
@@ -1188,19 +1144,13 @@
             }
 
             state.fokus.forEach(f => {
-                // Find product details
                 const p = state.produk.find(pr => pr.id === f.productId);
-                if(!p) return; // In case product deleted
+                if(!p) return;
 
-                // Calculate metrics from laporan
-                let totalSold = 0;
-                let totalRevenue = 0;
+                let totalSold = 0; let totalRevenue = 0;
                 
                 state.laporan.forEach(l => {
-                    if (l.productId === f.productId) {
-                        totalSold += l.qtySold;
-                        totalRevenue += l.total;
-                    }
+                    if (l.productId === f.productId) { totalSold += l.qtySold; totalRevenue += l.total; }
                 });
                 
                 const totalBerat = totalSold * p.volume;
@@ -1232,35 +1182,22 @@
                 btn.addEventListener('click', async (e) => {
                     if(!state.user) return;
                     const id = e.currentTarget.dataset.id;
-                    await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'fokus', id));
+                    await deleteDoc(getDocRef('fokus', id));
                     showToast('Dihapus dari fokus');
                 });
             });
         }
 
+        // Dashboard tetap Gabungan Semuanya (All Produk & All Kategori & Manual Omzet)
         function renderDashboard() {
-            // Summary Cards Logic
             const now = new Date();
             const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             
-            // Calculate total omzet this month
             let omzetBulanIni = 0;
             
-            // 1. Tambahkan dari Omzet Manual
-            state.omzet.forEach(o => {
-                if (o.date.startsWith(currentMonthStr)) {
-                    omzetBulanIni += o.amount;
-                }
-            });
-            
-            // 2. Tambahkan dari Input Laporan (CCM)
-            state.laporan.forEach(l => {
-                if (l.date.startsWith(currentMonthStr)) {
-                    omzetBulanIni += l.total;
-                }
-            });
+            state.omzet.forEach(o => { if (o.date.startsWith(currentMonthStr)) omzetBulanIni += o.amount; });
+            state.laporan.forEach(l => { if (l.date.startsWith(currentMonthStr)) omzetBulanIni += l.total; });
 
-            // Get Target this month
             const targetBulanIniObj = state.targets.find(t => t.month === currentMonthStr);
             const targetBulanIni = targetBulanIniObj ? targetBulanIniObj.amount : 0;
 
@@ -1274,37 +1211,23 @@
             document.getElementById('dash-target-text').innerText = `dari ${formatIDR(targetBulanIni)}`;
             document.getElementById('dash-target-bar').style.width = `${displayPercent}%`;
             
-            // Change color based on success
             const bar = document.getElementById('dash-target-bar');
             if(percent >= 100) { bar.classList.replace('bg-blue-600', 'bg-green-500'); } 
             else { bar.classList.replace('bg-green-500', 'bg-blue-600'); }
 
-            // Chart Logic
             const ctx = document.getElementById('dashboardChart');
             if(!ctx) return;
             
-            // Prepare Data for chart (Last 12 months or active months in year)
             const yearStr = now.getFullYear().toString();
             const months = Array.from({length: 12}, (_, i) => `${yearStr}-${String(i + 1).padStart(2, '0')}`);
             
             const omzetDataMap = {};
             
-            // 1. Dari Omzet Manual
-            state.omzet.forEach(o => {
-                const m = o.date.substring(0, 7);
-                omzetDataMap[m] = (omzetDataMap[m] || 0) + o.amount;
-            });
-            
-            // 2. Dari Input Laporan (CCM)
-            state.laporan.forEach(l => {
-                const m = l.date.substring(0, 7);
-                omzetDataMap[m] = (omzetDataMap[m] || 0) + l.total;
-            });
+            state.omzet.forEach(o => { const m = o.date.substring(0, 7); omzetDataMap[m] = (omzetDataMap[m] || 0) + o.amount; });
+            state.laporan.forEach(l => { const m = l.date.substring(0, 7); omzetDataMap[m] = (omzetDataMap[m] || 0) + l.total; });
             
             const targetDataMap = {};
-            state.targets.forEach(t => {
-                targetDataMap[t.month] = t.amount;
-            });
+            state.targets.forEach(t => { targetDataMap[t.month] = t.amount; });
 
             const labels = months.map(m => {
                 const date = new Date(m + '-01');
@@ -1313,65 +1236,29 @@
             const dataOmzet = months.map(m => omzetDataMap[m] || 0);
             const dataTarget = months.map(m => targetDataMap[m] || 0);
 
-            if (state.dashboardChart) {
-                state.dashboardChart.destroy();
-            }
+            if (state.dashboardChart) { state.dashboardChart.destroy(); }
 
             state.dashboardChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
-                        {
-                            label: 'Omzet (Rp)',
-                            data: dataOmzet,
-                            backgroundColor: 'rgba(37, 99, 235, 0.8)',
-                            borderRadius: 4,
-                            order: 2
-                        },
-                        {
-                            label: 'Target (Rp)',
-                            data: dataTarget,
-                            type: 'line',
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            borderWidth: 2,
-                            pointBackgroundColor: 'rgba(239, 68, 68, 1)',
-                            tension: 0.3,
-                            fill: false,
-                            order: 1
-                        }
+                        { label: 'Omzet (Rp)', data: dataOmzet, backgroundColor: 'rgba(37, 99, 235, 0.8)', borderRadius: 4, order: 2 },
+                        { label: 'Target (Rp)', data: dataTarget, type: 'line', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 2, pointBackgroundColor: 'rgba(239, 68, 68, 1)', tension: 0.3, fill: false, order: 1 }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) { label += ': '; }
-                                    if (context.parsed.y !== null) { label += formatIDR(context.parsed.y); }
-                                    return label;
-                                }
-                            }
-                        }
+                        tooltip: { callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } if (context.parsed.y !== null) { label += formatIDR(context.parsed.y); } return label; } } }
                     },
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            ticks: { callback: function(value) { return 'Rp ' + (value / 1000000) + 'Jt'; } }
-                        }
-                    }
+                    scales: { y: { beginAtZero: true, ticks: { callback: function(value) { return 'Rp ' + (value / 1000000) + 'Jt'; } } } }
                 }
             });
         }
 
-        // Initialize App UI view based on window size
-        if (window.innerWidth >= 768) {
-            sidebar.classList.remove('-translate-x-full');
-        }
+        if (window.innerWidth >= 768) { sidebar.classList.remove('-translate-x-full'); }
     </script>
 </body>
 </html>
