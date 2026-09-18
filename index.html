@@ -1246,13 +1246,17 @@
             const textColor = isDark ? '#d1d5db' : '#4b5563';
             const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
+            // Calculate smart max value for Y-axis scaling
+            const maxVal = Math.max(...dataOmzet, ...dataTarget, 1000000);
+            const suggestedMax = Math.ceil(maxVal * 1.15 / 10000000) * 10000000;
+
             state.dashboardChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Omzet (Rp)', data: dataOmzet, backgroundColor: 'rgba(37, 99, 235, 0.9)', borderRadius: 6, order: 2, barPercentage: 0.6 },
-                        { label: 'Target (Rp)', data: dataTarget, type: 'line', borderColor: 'rgba(239, 68, 68, 1)', borderWidth: 3, pointBackgroundColor: 'rgba(239, 68, 68, 1)', pointRadius: 4, tension: 0.4, fill: false, order: 1 }
+                        { label: 'Omzet (Rp)', data: dataOmzet, backgroundColor: 'rgba(37, 99, 235, 0.9)', borderRadius: 6, barPercentage: 0.45, categoryPercentage: 0.7 },
+                        { label: 'Target (Rp)', data: dataTarget, backgroundColor: 'rgba(239, 68, 68, 0.9)', borderRadius: 6, barPercentage: 0.45, categoryPercentage: 0.7 }
                     ]
                 },
                 options: {
@@ -1263,7 +1267,17 @@
                         tooltip: { backgroundColor: isDark ? 'rgba(31, 41, 55, 0.95)' : 'rgba(17, 24, 39, 0.9)', titleFont: { size: 13 }, bodyFont: { size: 14, weight: 'bold' }, padding: 12, cornerRadius: 8, callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) { label += ': '; } if (context.parsed.y !== null) { label += formatIDR(context.parsed.y); } return label; } } }
                     },
                     scales: { 
-                        y: { beginAtZero: true, border: { dash: [4, 4] }, grid: { color: gridColor }, ticks: { color: textColor, font: { family: "'Inter', sans-serif" }, callback: function(value) { return 'Rp ' + (value / 1000000) + 'Jt'; } } },
+                        y: { 
+                            beginAtZero: true, 
+                            suggestedMax: suggestedMax > 0 ? suggestedMax : 50000000,
+                            border: { dash: [4, 4] }, 
+                            grid: { color: gridColor }, 
+                            ticks: { 
+                                color: textColor, 
+                                font: { family: "'Inter', sans-serif" }, 
+                                callback: function(value) { return 'Rp ' + (value / 1000000) + 'Jt'; } 
+                            } 
+                        },
                         x: { grid: { display: false }, ticks: { color: textColor, font: { family: "'Inter', sans-serif" } } }
                     }
                 }
