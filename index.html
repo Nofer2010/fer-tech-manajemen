@@ -86,6 +86,18 @@
         @media (min-width: 1280px) {
             body.guest-mode .table-card-xl { grid-column: span 3 / span 3 !important; }
         }
+
+        /* Canvasing Image Preview */
+        #canvasing-preview {
+            display: none;
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        .dark #canvasing-preview { border-color: #374151; }
     </style>
 </head>
 <body class="text-gray-800 dark:text-gray-100 h-screen overflow-hidden flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -164,7 +176,7 @@
             <nav class="flex-1 overflow-y-auto py-4">
                 <ul class="space-y-1">
                     <li><a href="#" data-target="dashboard" class="nav-link sidebar-active flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><i class="fas fa-chart-pie w-6 text-center"></i> Dashboard</a></li>
-                    <li><a href="#" data-target="omzet" class="nav-link flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><i class="fas fa-wallet w-6 text-center"></i> Omzet Harian</a></li>
+                    <li><a href="#" data-target="canvasing" class="nav-link flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><i class="fas fa-map-marked-alt w-6 text-center"></i> Canvasing</a></li>
                     <li><a href="#" data-target="target" class="nav-link flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><i class="fas fa-bullseye w-6 text-center"></i> Target Bulanan</a></li>
                     <li><a href="#" data-target="produk" class="nav-link flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><i class="fas fa-boxes w-6 text-center"></i> Data Produk</a></li>
                     <li><a href="#" data-target="laporan" class="nav-link flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"><i class="fas fa-file-invoice-dollar w-6 text-center"></i> Input Laporan</a></li>
@@ -208,7 +220,7 @@
                 <section id="view-dashboard" class="view-section hide">
                     <div class="sticky-header">
                         <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Dashboard</h2>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm">Ringkasan performa omzet dan target Anda.</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">Ringkasan performa penjualan dan target Anda.</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -243,36 +255,42 @@
                     </div>
                 </section>
 
-                <!-- Omzet -->
-                <section id="view-omzet" class="view-section hide">
+                <!-- Canvasing -->
+                <section id="view-canvasing" class="view-section hide">
                     <div class="sticky-header flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">History Omzet Harian</h2>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">Catat pendapatan harian toko Anda.</p>
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Input Laporan Canvasing</h2>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">Catat aktivitas lapangan dan lokasi harian Anda.</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <!-- Form Card -->
                         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit form-card">
-                            <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-500"></i> <span id="omzet-form-title">Tambah Omzet</span></h3>
-                            <form id="form-omzet" class="space-y-4">
-                                <input type="hidden" id="omzet-id">
+                            <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-500"></i> <span id="canvasing-form-title">Tambah Canvasing</span></h3>
+                            <form id="form-canvasing" class="space-y-4">
+                                <input type="hidden" id="canvasing-id">
+                                <input type="hidden" id="canvasing-foto-base64">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal</label>
-                                    <input type="date" id="omzet-date" required class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                                    <input type="date" id="canvasing-date" required class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Omzet (Rp)</label>
-                                    <input type="number" id="omzet-amount" required min="0" class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload Foto Canvasing</label>
+                                    <input type="file" id="canvasing-foto-input" accept="image/*" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/50 dark:file:text-blue-400">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Sistem otomatis mengkompres ukuran agar muat.</p>
+                                    <img id="canvasing-preview" src="" alt="Preview">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Keterangan (Opsional)</label>
-                                    <input type="text" id="omzet-note" class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Keterangan (Tag Lokasi Realtime)</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="canvasing-lokasi" required placeholder="Klik ikon di samping untuk tag lokasi..." readonly class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-xl outline-none cursor-not-allowed text-sm">
+                                        <button type="button" id="btn-tag-lokasi" class="px-5 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800/50 rounded-xl transition-colors font-bold shadow-sm" title="Dapatkan Lokasi GPS"><i class="fas fa-map-marker-alt"></i></button>
+                                    </div>
                                 </div>
                                 <div class="flex gap-3 pt-2">
                                     <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl transition-colors text-sm font-semibold shadow-md">Simpan</button>
-                                    <button type="button" id="omzet-reset" class="px-5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 py-2.5 rounded-xl transition-colors text-sm font-semibold hide">Batal</button>
+                                    <button type="button" id="canvasing-reset" class="px-5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 py-2.5 rounded-xl transition-colors text-sm font-semibold hide">Batal</button>
                                 </div>
                             </form>
                         </div>
@@ -284,19 +302,19 @@
                                     <thead class="sticky top-0 bg-gray-50 dark:bg-gray-700 z-10">
                                         <tr class="text-gray-600 dark:text-gray-300 text-sm border-b border-gray-100 dark:border-gray-700">
                                             <th class="py-4 px-5 font-semibold">Tanggal</th>
-                                            <th class="py-4 px-5 font-semibold">Omzet</th>
+                                            <th class="py-4 px-5 font-semibold">Canvasing</th>
                                             <th class="py-4 px-5 font-semibold">Keterangan</th>
                                             <th class="py-4 px-5 font-semibold text-right action-col">Aksi</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="omzet-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
+                                    <tbody id="canvasing-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
                                         <!-- Rows generated by JS -->
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden" id="omzet-empty">
-                                <i class="fas fa-inbox text-4xl text-gray-200 dark:text-gray-600 mb-3 block"></i>
-                                Belum ada data omzet harian.
+                            <div class="p-8 text-center text-gray-500 dark:text-gray-400 text-sm hidden" id="canvasing-empty">
+                                <i class="fas fa-images text-4xl text-gray-200 dark:text-gray-600 mb-3 block"></i>
+                                Belum ada data laporan canvasing.
                             </div>
                         </div>
                     </div>
@@ -565,12 +583,11 @@
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // KONFIGURASI MODE TAMU (BACA DENGAN TELITI)
+        // KONFIGURASI MODE TAMU
         // ==========================================
         const GUEST_EMAIL = "iffan@tlnippon.com"; 
         const GUEST_PASS = "Tlnippon123"
         const ADMIN_UID = "y2ZwM5LvARRHf6sZnncD76tb4hv2"; 
-        // Ganti teks "TARUH_UID_AKUN_UTAMA_DISINI" dengan User UID akun ferdianockt... yang ada di Firebase Console.
         // ==========================================
 
         const firebaseConfig = {
@@ -590,7 +607,7 @@
         // Global State
         const state = {
             user: null, userId: null, isGuest: false,
-            omzet: [], targets: [], produk: [], laporan: [], fokus: [],
+            canvasing: [], targets: [], produk: [], laporan: [], fokus: [],
             unsubscribes: [], dashboardChart: null
         };
 
@@ -734,21 +751,21 @@
             }
         });
 
-                    // --- LOGIN TAMU (READ ONLY) ---
-          document.getElementById('btn-guest')?.addEventListener('click', async () => {
-          const btn = document.getElementById('btn-guest');
-     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
-    btn.disabled = true;
-    try {
-        // Login otomatis pakai akun tamu
-        await signInWithEmailAndPassword(auth, GUEST_EMAIL, GUEST_PASS);
-        showToast("Berhasil masuk mode Tamu", 'success');
-    } catch (error) {
-        showToast("Gagal login tamu. Pastikan akun sudah dibuat di Firebase!", 'error');
-        btn.innerHTML = '<i class="fas fa-user-secret"></i> <span>Masuk sebagai Tamu (View-Only)</span>';
-        btn.disabled = false;
-    }
-});
+        // --- LOGIN TAMU (READ ONLY) ---
+        document.getElementById('btn-guest')?.addEventListener('click', async () => {
+            const btn = document.getElementById('btn-guest');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
+            btn.disabled = true;
+            try {
+                // Login otomatis pakai akun tamu
+                await signInWithEmailAndPassword(auth, GUEST_EMAIL, GUEST_PASS);
+                showToast("Berhasil masuk mode Tamu", 'success');
+            } catch (error) {
+                showToast("Gagal login tamu. Pastikan akun sudah dibuat di Firebase!", 'error');
+                btn.innerHTML = '<i class="fas fa-user-secret"></i> <span>Masuk sebagai Tamu (View-Only)</span>';
+                btn.disabled = false;
+            }
+        });
 
         document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
 
@@ -801,11 +818,9 @@
         function initDataListeners() {
             cleanupListeners(); 
 
-            state.unsubscribes.push(onSnapshot(query(getColRef('omzet')), (snapshot) => {
-                state.omzet = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.date.localeCompare(a.date));
-                renderOmzet();
-                if (!document.getElementById('view-dashboard').classList.contains('hide')) renderDashboard();
-                if (!document.getElementById('view-target').classList.contains('hide')) renderTarget();
+            state.unsubscribes.push(onSnapshot(query(getColRef('canvasing')), (snapshot) => {
+                state.canvasing = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.date.localeCompare(a.date));
+                renderCanvasing();
             }, (error) => console.error(error)));
 
             state.unsubscribes.push(onSnapshot(query(getColRef('targets')), (snapshot) => {
@@ -837,82 +852,165 @@
             state.unsubscribes = [];
         }
 
-        /* --- OMZET HARIAN --- */
-        const formOmzet = document.getElementById('form-omzet');
-        const tBodyOmzet = document.getElementById('omzet-tbody');
-        document.getElementById('omzet-date').valueAsDate = new Date();
 
-        formOmzet.addEventListener('submit', async (e) => {
+        /* --- CANVASING (PENGGANTI OMZET HARIAN) --- */
+        const formCanvasing = document.getElementById('form-canvasing');
+        const tBodyCanvasing = document.getElementById('canvasing-tbody');
+        document.getElementById('canvasing-date').valueAsDate = new Date();
+
+        // 1. Fitur Kompresi Gambar
+        document.getElementById('canvasing-foto-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; // Resize resolusi agar ringan
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height = Math.round((height * MAX_WIDTH) / width);
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Kompres ke format JPEG kualitas 60%
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('canvasing-foto-base64').value = dataUrl;
+                    
+                    const preview = document.getElementById('canvasing-preview');
+                    preview.src = dataUrl;
+                    preview.style.display = 'block';
+                }
+            }
+        });
+
+        // 2. Fitur Auto Get Lokasi
+        document.getElementById('btn-tag-lokasi').addEventListener('click', () => {
+            const inputLoc = document.getElementById('canvasing-lokasi');
+            inputLoc.value = "Mencari koordinat lokasi...";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        inputLoc.value = `${lat},${lon}`;
+                        showToast("Lokasi berhasil di-tag");
+                    },
+                    (error) => {
+                        inputLoc.value = "";
+                        showToast("Gagal. Pastikan GPS aktif dan browser diizinkan akses lokasi.", "error");
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                inputLoc.value = "";
+                showToast("Browser tidak mendukung pencarian lokasi", "error");
+            }
+        });
+
+        formCanvasing.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!state.user || state.isGuest) return;
-            const id = document.getElementById('omzet-id').value;
+            const id = document.getElementById('canvasing-id').value;
+            const fotoBase64 = document.getElementById('canvasing-foto-base64').value;
+            const lokasi = document.getElementById('canvasing-lokasi').value;
+
+            if (!fotoBase64) { showToast("Foto canvasing wajib diisi", "error"); return; }
+            if (!lokasi) { showToast("Lokasi wajib di-tag", "error"); return; }
+
             const data = {
-                date: document.getElementById('omzet-date').value,
-                amount: parseFloat(document.getElementById('omzet-amount').value),
-                note: document.getElementById('omzet-note').value
+                date: document.getElementById('canvasing-date').value,
+                fotoBase64: fotoBase64,
+                lokasi: lokasi
             };
             try {
-                if (id) { await updateDoc(getDocRef('omzet', id), data); showToast("Omzet diperbarui"); } 
-                else { await addDoc(getColRef('omzet'), data); showToast("Omzet ditambahkan"); }
-                resetFormOmzet();
+                if (id) { await updateDoc(getDocRef('canvasing', id), data); showToast("Laporan Canvasing diperbarui"); } 
+                else { await addDoc(getColRef('canvasing'), data); showToast("Laporan Canvasing ditambahkan"); }
+                resetFormCanvasing();
             } catch (err) { showToast("Gagal menyimpan data", 'error'); }
         });
 
-        function resetFormOmzet() {
-            formOmzet.reset();
-            document.getElementById('omzet-date').valueAsDate = new Date();
-            document.getElementById('omzet-id').value = '';
-            document.getElementById('omzet-form-title').innerText = 'Tambah Omzet';
-            document.getElementById('omzet-reset').classList.add('hide');
+        function resetFormCanvasing() {
+            formCanvasing.reset();
+            document.getElementById('canvasing-date').valueAsDate = new Date();
+            document.getElementById('canvasing-id').value = '';
+            document.getElementById('canvasing-foto-base64').value = '';
+            document.getElementById('canvasing-preview').style.display = 'none';
+            document.getElementById('canvasing-preview').src = '';
+            document.getElementById('canvasing-form-title').innerText = 'Tambah Canvasing';
+            document.getElementById('canvasing-reset').classList.add('hide');
         }
-        document.getElementById('omzet-reset').addEventListener('click', resetFormOmzet);
+        document.getElementById('canvasing-reset').addEventListener('click', resetFormCanvasing);
 
-        function renderOmzet() {
-            tBodyOmzet.innerHTML = '';
-            if (state.omzet.length === 0) { document.getElementById('omzet-empty').classList.remove('hidden'); return; }
-            document.getElementById('omzet-empty').classList.add('hidden');
+        function renderCanvasing() {
+            tBodyCanvasing.innerHTML = '';
+            if (state.canvasing.length === 0) { document.getElementById('canvasing-empty').classList.remove('hidden'); return; }
+            document.getElementById('canvasing-empty').classList.add('hidden');
             
-            state.omzet.forEach(item => {
+            state.canvasing.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="py-3 px-5 dark:text-gray-200">${item.date}</td>
-                    <td class="py-3 px-5 font-bold text-gray-800 dark:text-white">${formatIDR(item.amount)}</td>
-                    <td class="py-3 px-5 text-gray-500 dark:text-gray-400">${item.note || '-'}</td>
-                    <td class="py-3 px-5 text-right action-col">
-                        <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-omzet" data-id="${item.id}"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-omzet" data-id="${item.id}"><i class="fas fa-trash"></i></button>
+                    <td class="py-3 px-5 dark:text-gray-200 align-middle">${item.date}</td>
+                    <td class="py-3 px-5 align-middle">
+                        <img src="${item.fotoBase64}" class="w-20 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${item.fotoBase64}')" title="Klik untuk perbesar">
+                    </td>
+                    <td class="py-3 px-5 text-gray-500 dark:text-gray-400 align-middle">
+                        <a href="https://www.google.com/maps/search/?api=1&query=${item.lokasi}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors text-xs font-semibold">
+                            <i class="fas fa-map-marker-alt"></i> Buka Peta
+                        </a>
+                    </td>
+                    <td class="py-3 px-5 text-right action-col align-middle">
+                        <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-canvasing" data-id="${item.id}"><i class="fas fa-edit"></i></button>
+                        <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-canvasing" data-id="${item.id}"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
-                tBodyOmzet.appendChild(tr);
+                tBodyCanvasing.appendChild(tr);
             });
 
-            document.querySelectorAll('.btn-edit-omzet').forEach(btn => {
+            document.querySelectorAll('.btn-edit-canvasing').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (state.isGuest) return;
-                    const item = state.omzet.find(o => o.id === e.currentTarget.dataset.id);
+                    const item = state.canvasing.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
-                        document.getElementById('omzet-id').value = item.id;
-                        document.getElementById('omzet-date').value = item.date;
-                        document.getElementById('omzet-amount').value = item.amount;
-                        document.getElementById('omzet-note').value = item.note || '';
-                        document.getElementById('omzet-form-title').innerText = 'Edit Omzet';
-                        document.getElementById('omzet-reset').classList.remove('hide');
+                        document.getElementById('canvasing-id').value = item.id;
+                        document.getElementById('canvasing-date').value = item.date;
+                        document.getElementById('canvasing-lokasi').value = item.lokasi;
+                        document.getElementById('canvasing-foto-base64').value = item.fotoBase64;
+                        
+                        const preview = document.getElementById('canvasing-preview');
+                        preview.src = item.fotoBase64;
+                        preview.style.display = 'block';
+
+                        document.getElementById('canvasing-form-title').innerText = 'Edit Canvasing';
+                        document.getElementById('canvasing-reset').classList.remove('hide');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 });
             });
 
-            document.querySelectorAll('.btn-del-omzet').forEach(btn => {
+            document.querySelectorAll('.btn-del-canvasing').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (state.isGuest) return;
-                    showConfirm('Hapus Omzet', 'Data omzet harian ini akan dihapus permanen.', async () => {
+                    showConfirm('Hapus Canvasing', 'Data dan foto canvasing ini akan dihapus permanen.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(getDocRef('omzet', e.currentTarget.dataset.id));
+                        await deleteDoc(getDocRef('canvasing', e.currentTarget.dataset.id));
                         showToast('Data berhasil dihapus');
                     });
                 });
             });
         }
+
 
         /* --- TARGET BULANAN --- */
         const formTarget = document.getElementById('form-target');
@@ -1265,8 +1363,9 @@
         function renderDashboard() {
             const now = new Date();
             const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            
+            // Perhitungan omzet sekarang murni bersumber dari Laporan Penjualan (karena Omzet Harian dihapus diganti Canvasing)
             let omzetBulanIni = 0;
-            state.omzet.forEach(o => { if (o.date.startsWith(currentMonthStr)) omzetBulanIni += o.amount; });
             state.laporan.forEach(l => { if (l.date.startsWith(currentMonthStr)) omzetBulanIni += l.total; });
 
             const targetBulanIniObj = state.targets.find(t => t.month === currentMonthStr);
@@ -1293,7 +1392,6 @@
             const months = Array.from({length: 12}, (_, i) => `${yearStr}-${String(i + 1).padStart(2, '0')}`);
             
             const omzetDataMap = {};
-            state.omzet.forEach(o => { const m = o.date.substring(0, 7); omzetDataMap[m] = (omzetDataMap[m] || 0) + o.amount; });
             state.laporan.forEach(l => { const m = l.date.substring(0, 7); omzetDataMap[m] = (omzetDataMap[m] || 0) + l.total; });
             const targetDataMap = {}; state.targets.forEach(t => { targetDataMap[t.month] = t.amount; });
 
