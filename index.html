@@ -1277,12 +1277,27 @@
         const lapQty = document.getElementById('laporan-qty');
         const lapHarga = document.getElementById('laporan-harga');
         const lapTotal = document.getElementById('laporan-total-preview');
+        const lapProduk = document.getElementById('laporan-produk');
         
         function updateLaporanTotal() {
             const q = parseFloat(lapQty.value) || 0; const h = parseFloat(lapHarga.value) || 0;
             lapTotal.innerText = formatIDR(q * h);
         }
         lapQty.addEventListener('input', updateLaporanTotal); lapHarga.addEventListener('input', updateLaporanTotal);
+
+        // EVENT LISTENER BARU UNTUK AUTO-FILL HARGA RM
+        lapProduk.addEventListener('change', (e) => {
+            const productId = e.target.value;
+            const product = state.produk.find(p => p.id === productId);
+            
+            // Cek apakah produk yang dipilih mengandung kata 'RM' pada kategorinya
+            if (product && product.kategori && product.kategori.trim().toUpperCase().includes('RM')) {
+                lapHarga.value = product.harga || 0;
+            } else {
+                lapHarga.value = ''; // Mengosongkan harga jika bukan RM agar bisa diisi manual
+            }
+            updateLaporanTotal();
+        });
 
         formLaporan.addEventListener('submit', async (e) => {
             e.preventDefault();
