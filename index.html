@@ -532,6 +532,73 @@
                         </button>
                     </div>
 
+                    <!-- KARTU TARGET KHUSUS GABUNGAN KATEGORI RM (Elastex & Vinilex) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" id="rm-special-targets-container">
+                        <!-- Elastex Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-indigo-100 dark:border-indigo-900/50 overflow-hidden relative">
+                            <div class="p-6 border-b border-gray-50 dark:border-gray-700 relative overflow-hidden bg-gradient-to-r from-indigo-50/50 to-blue-50/50 dark:from-indigo-950/20 dark:to-blue-950/20">
+                                <div class="text-xs text-indigo-600 dark:text-indigo-400 font-black mb-1.5 tracking-widest uppercase">KATEGORI RM (GABUNGAN)</div>
+                                <h3 class="font-bold text-gray-800 dark:text-gray-100 text-xl leading-tight">Target Elastex (4 kg + 20 kg)</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium"><i class="fas fa-layer-group text-indigo-400 mr-1.5"></i> Total Berat Penjualan RM</p>
+                            </div>
+                            <div class="px-6 py-4 border-b border-gray-50 dark:border-gray-700">
+                                <div class="flex justify-between items-end mb-1">
+                                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400" id="elastex-target-month-label">Target Bulan Ini</span>
+                                    <button class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline action-col" onclick="openTargetRmSpecial('elastex')">Set Target</button>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-bold text-gray-800 dark:text-gray-100" id="elastex-target-stat">0 / 0 <span class="text-xs font-normal">Kg</span></span>
+                                    <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400" id="elastex-target-pct">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-indigo-600 h-1.5 rounded-full transition-all duration-1000" id="elastex-target-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="p-6 grid grid-cols-2 gap-4 bg-gray-50/30 dark:bg-gray-800/30">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">Total Omzet</p>
+                                    <p class="font-bold text-green-600 dark:text-green-400 text-base" id="elastex-total-rev">Rp 0</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">Total Berat (Kg)</p>
+                                    <p class="font-bold text-gray-800 dark:text-gray-200 text-base" id="elastex-total-vol">0 Kg</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vinilex Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-blue-100 dark:border-blue-900/50 overflow-hidden relative">
+                            <div class="p-6 border-b border-gray-50 dark:border-gray-700 relative overflow-hidden bg-gradient-to-r from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20">
+                                <div class="text-xs text-blue-600 dark:text-blue-400 font-black mb-1.5 tracking-widest uppercase">KATEGORI RM (GABUNGAN)</div>
+                                <h3 class="font-bold text-gray-800 dark:text-gray-100 text-xl leading-tight">Target Vinilex (5 kg + 25 kg)</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium"><i class="fas fa-layer-group text-blue-400 mr-1.5"></i> Total Berat Penjualan RM</p>
+                            </div>
+                            <div class="px-6 py-4 border-b border-gray-50 dark:border-gray-700">
+                                <div class="flex justify-between items-end mb-1">
+                                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400" id="vinilex-target-month-label">Target Bulan Ini</span>
+                                    <button class="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline action-col" onclick="openTargetRmSpecial('vinilex')">Set Target</button>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-bold text-gray-800 dark:text-gray-100" id="vinilex-target-stat">0 / 0 <span class="text-xs font-normal">Kg</span></span>
+                                    <span class="text-xs font-bold text-blue-600 dark:text-blue-400" id="vinilex-target-pct">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-1000" id="vinilex-target-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="p-6 grid grid-cols-2 gap-4 bg-gray-50/30 dark:bg-gray-800/30">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">Total Omzet</p>
+                                    <p class="font-bold text-green-600 dark:text-green-400 text-base" id="vinilex-total-rev">Rp 0</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">Total Berat (Kg)</p>
+                                    <p class="font-bold text-gray-800 dark:text-gray-200 text-base" id="vinilex-total-vol">0 Kg</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="fokus-grid">
                         <!-- Cards generated by JS -->
                     </div>
@@ -597,7 +664,7 @@
         </div>
     </div>
 
-    <!-- Modal Set Target Fokus (BARU) -->
+    <!-- Modal Set Target Fokus -->
     <div id="modal-target-fokus" class="fixed inset-0 z-[85] flex items-center justify-center modal-overlay">
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden modal-content border border-gray-100 dark:border-gray-700">
             <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/80">
@@ -611,6 +678,26 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" id="tf-label">Target (Qty)</label>
                         <input type="number" id="tf-amount" required min="0" class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition-all text-sm font-bold shadow-md mt-2">Simpan Target</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Set Target RM Special (BARU) -->
+    <div id="modal-target-rm" class="fixed inset-0 z-[85] flex items-center justify-center modal-overlay">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden modal-content border border-gray-100 dark:border-gray-700">
+            <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/80">
+                <h3 class="font-bold text-gray-800 dark:text-white text-lg" id="rm-modal-title">Set Target RM</h3>
+                <button onclick="closeModalTargetRmSpecial()" class="text-gray-400 hover:text-red-500 transition-colors w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6">
+                <form id="form-target-rm" class="space-y-4">
+                    <input type="hidden" id="rm-product-key">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target Berat (Kg)</label>
+                        <input type="number" id="rm-tf-amount" required min="0" class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm">
                     </div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition-all text-sm font-bold shadow-md mt-2">Simpan Target</button>
                 </form>
@@ -666,7 +753,7 @@
         // Global State
         const state = {
             user: null, userId: null, isGuest: false,
-            canvasing: [], targets: [], produk: [], laporan: [], fokus: [],
+            canvasing: [], targets: [], produk: [], laporan: [], fokus: [], rmTargets: {},
             unsubscribes: [], dashboardChart: null
         };
 
@@ -754,7 +841,6 @@
         window.openModalFokus = function() { document.getElementById('modal-fokus').classList.add('active'); }
         window.closeModalFokus = function() { document.getElementById('modal-fokus').classList.remove('active'); }
 
-        // --- FUNGSI MODAL TARGET FOKUS (BARU) ---
         window.openTargetFokus = function(id, month, currentTarget, productName) {
             document.getElementById('tf-id').value = id;
             document.getElementById('tf-month').value = month;
@@ -766,6 +852,44 @@
             document.getElementById('modal-target-fokus').classList.remove('active');
         }
 
+        // --- FUNGSI MODAL TARGET RM SPECIAL ---
+        window.openTargetRmSpecial = function(productKey) {
+            const now = new Date();
+            const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            document.getElementById('rm-product-key').value = productKey;
+            const currentTarget = (state.rmTargets[currentMonthStr] && state.rmTargets[currentMonthStr][productKey]) ? state.rmTargets[currentMonthStr][productKey] : 0;
+            document.getElementById('rm-tf-amount').value = currentTarget;
+            document.getElementById('rm-modal-title').innerText = `Target Berat ${productKey === 'elastex' ? 'Elastex (4kg+20kg)' : 'Vinilex (5kg+25kg)'} (${currentMonthStr})`;
+            document.getElementById('modal-target-rm').classList.add('active');
+        }
+        window.closeModalTargetRmSpecial = function() {
+            document.getElementById('modal-target-rm').classList.remove('active');
+        }
+
+        document.getElementById('form-target-rm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!state.user || state.isGuest) return;
+            const productKey = document.getElementById('rm-product-key').value;
+            const amount = parseInt(document.getElementById('rm-tf-amount').value);
+            const now = new Date();
+            const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            
+            try {
+                const docRef = getDocRef('settings', 'rm_targets');
+                const docSnap = await getDoc(docRef);
+                let allData = docSnap.exists() ? docSnap.data() : {};
+                if(!allData[currentMonthStr]) allData[currentMonthStr] = {};
+                allData[currentMonthStr][productKey] = amount;
+
+                await setDoc(docRef, allData);
+                showToast("Target khusus RM diperbarui");
+                closeModalTargetRmSpecial();
+            } catch (err) {
+                showToast("Gagal menyimpan target RM", "error");
+            }
+        });
+        // ----------------------------------------
+
         document.getElementById('form-target-fokus').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(!state.user || state.isGuest) return;
@@ -775,7 +899,6 @@
             
             try {
                 const updateData = {};
-                // Menyimpan target berdasarkan bulan menggunakan object dot notation ke Firebase
                 updateData[`targets.${month}`] = amount;
                 await updateDoc(getDocRef('fokus', id), updateData);
                 showToast("Target fokus diperbarui");
@@ -784,7 +907,6 @@
                 showToast("Gagal memperbarui target", "error");
             }
         });
-        // ----------------------------------------
 
         document.getElementById('toggle-password').addEventListener('click', function() {
             const input = document.getElementById('login-password');
@@ -913,6 +1035,12 @@
                 state.targets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a, b) => b.month.localeCompare(a.month));
                 renderTarget();
                 if (!document.getElementById('view-dashboard').classList.contains('hide')) renderDashboard();
+            }, (error) => console.error(error)));
+
+            // Listeners untuk Target RM khusus settings
+            state.unsubscribes.push(onSnapshot(getDocRef('settings', 'rm_targets'), (docSnap) => {
+                state.rmTargets = docSnap.exists() ? docSnap.data() : {};
+                renderFokus();
             }, (error) => console.error(error)));
 
             state.unsubscribes.push(onSnapshot(query(getColRef('produk')), (snapshot) => {
@@ -1303,7 +1431,6 @@
             if(!tbody) return;
             tbody.innerHTML = '';
             
-            // Filter hanya produk yang kategori nya mengandung 'RM' (case-insensitive)
             const rmProducts = state.produk.filter(p => p.kategori && p.kategori.trim().toUpperCase().includes('RM'));
 
             if (rmProducts.length === 0) {
@@ -1429,7 +1556,7 @@
             });
         }
 
-        /* --- FOKUS DENGAN TARGET BULANAN --- */
+        /* --- FOKUS DENGAN TARGET BULANAN DAN RM SPECIAL CARDS --- */
         document.getElementById('form-fokus').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(!state.user || state.isGuest) return;
@@ -1443,15 +1570,66 @@
         });
 
         function renderFokus() {
-            const grid = document.getElementById('fokus-grid'); grid.innerHTML = '';
-            if(state.fokus.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm"><i class="fas fa-eye text-4xl mb-3 text-gray-200 dark:text-gray-600"></i><br>Belum ada produk yang dipantau.</div>`;
-                return;
-            }
-            
-            // Mendapatkan bulan berjalan (format YYYY-MM)
+            // RENDER KARTU KHUSUS RM (Elastex & Vinilex)
             const now = new Date();
             const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            document.getElementById('elastex-target-month-label').innerText = `Target Bulan Ini (${currentMonthStr})`;
+            document.getElementById('vinilex-target-month-label').innerText = `Target Bulan Ini (${currentMonthStr})`;
+
+            // Helper kalkulasi kategori RM
+            let elastexVol = 0, elastexRev = 0;
+            let vinilexVol = 0, vinilexRev = 0;
+
+            state.laporan.forEach(l => {
+                const p = state.produk.find(pr => pr.id === l.productId);
+                if (p && p.kategori && p.kategori.trim().toUpperCase().includes('RM')) {
+                    const nameLower = p.nama.toLowerCase();
+                    const isElastexMatch = nameLower.includes('elastex') && (p.volume === 4 || p.volume === 20);
+                    const isVinilexMatch = nameLower.includes('vinilex') && (p.volume === 5 || p.volume === 25);
+
+                    // Khusus bulan berjalan untuk progres, atau hitung semua untuk total
+                    if (l.date.startsWith(currentMonthStr)) {
+                        if (isElastexMatch) {
+                            elastexVol += (l.qtySold * p.volume);
+                            elastexRev += l.total;
+                        }
+                        if (isVinilexMatch) {
+                            vinilexVol += (l.qtySold * p.volume);
+                            vinilexRev += l.total;
+                        }
+                    }
+                }
+            });
+
+            // Target RM dari settings
+            const rmTargetsMonth = state.rmTargets[currentMonthStr] || {};
+            const elastexTarget = rmTargetsMonth['elastex'] || 0;
+            const vinilexTarget = rmTargetsMonth['vinilex'] || 0;
+
+            // Render Elastex Card UI
+            const elastexPct = elastexTarget > 0 ? (elastexVol / elastexTarget) * 100 : 0;
+            const elastexDisplayPct = elastexPct > 100 ? 100 : elastexPct;
+            document.getElementById('elastex-target-stat').innerHTML = `${elastexVol.toLocaleString('id-ID')} / ${elastexTarget.toLocaleString('id-ID')} <span class="text-xs font-normal">Kg</span>`;
+            document.getElementById('elastex-target-pct').innerText = `${elastexPct.toFixed(1)}%`;
+            document.getElementById('elastex-target-bar').style.width = `${elastexDisplayPct}%`;
+            document.getElementById('elastex-total-rev').innerText = formatIDR(elastexRev);
+            document.getElementById('elastex-total-vol').innerText = `${elastexVol.toLocaleString('id-ID')} Kg`;
+
+            // Render Vinilex Card UI
+            const vinilexPct = vinilexTarget > 0 ? (vinilexVol / vinilexTarget) * 100 : 0;
+            const vinilexDisplayPct = vinilexPct > 100 ? 100 : vinilexPct;
+            document.getElementById('vinilex-target-stat').innerHTML = `${vinilexVol.toLocaleString('id-ID')} / ${vinilexTarget.toLocaleString('id-ID')} <span class="text-xs font-normal">Kg</span>`;
+            document.getElementById('vinilex-target-pct').innerText = `${vinilexPct.toFixed(1)}%`;
+            document.getElementById('vinilex-target-bar').style.width = `${vinilexDisplayPct}%`;
+            document.getElementById('vinilex-total-rev').innerText = formatIDR(vinilexRev);
+            document.getElementById('vinilex-total-vol').innerText = `${vinilexVol.toLocaleString('id-ID')} Kg`;
+
+            // RENDER KARTU FOKUS BIASA
+            const grid = document.getElementById('fokus-grid'); grid.innerHTML = '';
+            if(state.fokus.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-6 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm"><i class="fas fa-eye text-3xl mb-2 text-gray-200 dark:text-gray-600"></i><br>Belum ada produk fokus tambahan.</div>`;
+                return;
+            }
 
             state.fokus.forEach(f => {
                 const p = state.produk.find(pr => pr.id === f.productId); if(!p) return;
@@ -1463,8 +1641,6 @@
                     if (l.productId === f.productId) { 
                         totalSold += l.qtySold; 
                         totalRevenue += l.total; 
-                        
-                        // Cek penjualan khusus bulan berjalan
                         if (l.date.startsWith(currentMonthStr)) {
                             terjualBulanIni += l.qtySold;
                         }
@@ -1472,9 +1648,7 @@
                 });
                 const totalBerat = totalSold * p.volume;
 
-                // Ambil target untuk bulan ini
                 const targetBulanIni = (f.targets && f.targets[currentMonthStr]) ? parseInt(f.targets[currentMonthStr]) : 0;
-                
                 let percent = targetBulanIni > 0 ? (terjualBulanIni / targetBulanIni) * 100 : 0;
                 let displayPercent = percent > 100 ? 100 : percent;
                 let progressColor = percent >= 100 ? 'bg-green-500' : 'bg-blue-600';
@@ -1490,7 +1664,6 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium relative"><i class="fas fa-box-open text-gray-300 dark:text-gray-500 mr-1.5"></i> ${p.volume} ${p.satuan}</p>
                     </div>
 
-                    <!-- Target Progress Section (Bulan Ini) -->
                     <div class="px-6 py-4 border-b border-gray-50 dark:border-gray-700">
                         <div class="flex justify-between items-end mb-1">
                             <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Target Bulan Ini (${currentMonthStr})</span>
@@ -1505,7 +1678,6 @@
                         </div>
                     </div>
 
-                    <!-- Overall Data Section -->
                     <div class="bg-gradient-to-b from-gray-50/50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-900/50 p-6 grid grid-cols-2 gap-4">
                         <div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 font-medium">Total Terjual</p>
@@ -1533,7 +1705,6 @@
             const now = new Date();
             const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             
-            // Perhitungan omzet sekarang murni bersumber dari Laporan Penjualan (karena Omzet Harian dihapus diganti Canvasing)
             let omzetBulanIni = 0;
             state.laporan.forEach(l => { if (l.date.startsWith(currentMonthStr)) omzetBulanIni += l.total; });
 
@@ -1572,12 +1743,10 @@
 
             if (state.dashboardChart) { state.dashboardChart.destroy(); }
 
-            // Chart JS Dark Mode Compatibility
             const isDark = document.documentElement.classList.contains('dark');
             const textColor = isDark ? '#d1d5db' : '#4b5563';
             const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
-            // Calculate smart max value for Y-axis scaling
             const maxVal = Math.max(...dataOmzet, ...dataTarget, 1000000);
             const suggestedMax = Math.ceil(maxVal * 1.15 / 10000000) * 10000000;
 
