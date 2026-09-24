@@ -498,8 +498,14 @@
                             </form>
                         </div>
                         
-                        <!-- Table Card -->
+                        <!-- Table Card with Search by Date/Month/Year -->
                         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full table-card">
+                            <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-800/80">
+                                <div class="relative flex-1 w-full max-w-full">
+                                    <i class="fas fa-search absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" id="laporan-search" placeholder="Cari berdasarkan tanggal (YYYY-MM-DD), bulan (YYYY-MM), tahun (YYYY), atau produk..." class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm">
+                                </div>
+                            </div>
                             <div class="overflow-x-auto w-full max-h-[500px]">
                                 <table class="w-full text-left border-collapse whitespace-nowrap">
                                     <thead class="sticky top-0 bg-gray-50 dark:bg-gray-700 z-10">
@@ -685,7 +691,7 @@
         </div>
     </div>
 
-    <!-- Modal Set Target RM Special (BARU) -->
+    <!-- Modal Set Target RM Special -->
     <div id="modal-target-rm" class="fixed inset-0 z-[85] flex items-center justify-center modal-overlay">
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden modal-content border border-gray-100 dark:border-gray-700">
             <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/80">
@@ -852,7 +858,6 @@
             document.getElementById('modal-target-fokus').classList.remove('active');
         }
 
-        // --- FUNGSI MODAL TARGET RM SPECIAL ---
         window.openTargetRmSpecial = function(productKey) {
             const now = new Date();
             const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -888,7 +893,6 @@
                 showToast("Gagal menyimpan target RM", "error");
             }
         });
-        // ----------------------------------------
 
         document.getElementById('form-target-fokus').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -946,7 +950,6 @@
             });
         });
 
-        // --- LOGIN BIASA ---
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-login');
@@ -965,7 +968,6 @@
             }
         });
 
-        // --- LOGIN TAMU (READ ONLY) ---
         document.getElementById('btn-guest')?.addEventListener('click', async () => {
             const btn = document.getElementById('btn-guest');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
@@ -1037,7 +1039,6 @@
                 if (!document.getElementById('view-dashboard').classList.contains('hide')) renderDashboard();
             }, (error) => console.error(error)));
 
-            // Listeners untuk Target RM khusus settings
             state.unsubscribes.push(onSnapshot(getDocRef('settings', 'rm_targets'), (docSnap) => {
                 state.rmTargets = docSnap.exists() ? docSnap.data() : {};
                 renderFokus();
@@ -1509,10 +1510,25 @@
         }
         document.getElementById('laporan-reset').addEventListener('click', resetFormLaporan);
 
+        let laporanSearch = '';
+        document.getElementById('laporan-search').addEventListener('input', (e) => {
+            laporanSearch = e.target.value.toLowerCase().trim();
+            renderLaporan();
+        });
+
         function renderLaporan() {
             const tbody = document.getElementById('laporan-tbody');
             tbody.innerHTML = '';
-            state.laporan.forEach(l => {
+            
+            // Filter laporan berdasarkan input search (tanggal, bulan, tahun, atau nama produk)
+            let filteredLaporan = state.laporan.filter(l => {
+                if (!laporanSearch) return true;
+                const dateMatch = l.date.toLowerCase().includes(laporanSearch); // Cocok dengan YYYY-MM-DD, YYYY-MM, atau YYYY
+                const nameMatch = l.productName.toLowerCase().includes(laporanSearch);
+                return dateMatch || nameMatch;
+            });
+
+            filteredLaporan.forEach(l => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="py-3 px-5 whitespace-nowrap text-gray-500 dark:text-gray-400">${l.date}</td>
@@ -1570,13 +1586,11 @@
         });
 
         function renderFokus() {
-            // RENDER KARTU KHUSUS RM (Elastex & Vinilex)
             const now = new Date();
             const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             document.getElementById('elastex-target-month-label').innerText = `Target Bulan Ini (${currentMonthStr})`;
             document.getElementById('vinilex-target-month-label').innerText = `Target Bulan Ini (${currentMonthStr})`;
 
-            // Helper kalkulasi kategori RM
             let elastexVol = 0, elastexRev = 0;
             let vinilexVol = 0, vinilexRev = 0;
 
@@ -1587,7 +1601,6 @@
                     const isElastexMatch = nameLower.includes('elastex') && (p.volume === 4 || p.volume === 20);
                     const isVinilexMatch = nameLower.includes('vinilex') && (p.volume === 5 || p.volume === 25);
 
-                    // Khusus bulan berjalan untuk progres, atau hitung semua untuk total
                     if (l.date.startsWith(currentMonthStr)) {
                         if (isElastexMatch) {
                             elastexVol += (l.qtySold * p.volume);
@@ -1601,12 +1614,10 @@
                 }
             });
 
-            // Target RM dari settings
             const rmTargetsMonth = state.rmTargets[currentMonthStr] || {};
             const elastexTarget = rmTargetsMonth['elastex'] || 0;
             const vinilexTarget = rmTargetsMonth['vinilex'] || 0;
 
-            // Render Elastex Card UI
             const elastexPct = elastexTarget > 0 ? (elastexVol / elastexTarget) * 100 : 0;
             const elastexDisplayPct = elastexPct > 100 ? 100 : elastexPct;
             document.getElementById('elastex-target-stat').innerHTML = `${elastexVol.toLocaleString('id-ID')} / ${elastexTarget.toLocaleString('id-ID')} <span class="text-xs font-normal">Kg</span>`;
@@ -1615,7 +1626,6 @@
             document.getElementById('elastex-total-rev').innerText = formatIDR(elastexRev);
             document.getElementById('elastex-total-vol').innerText = `${elastexVol.toLocaleString('id-ID')} Kg`;
 
-            // Render Vinilex Card UI
             const vinilexPct = vinilexTarget > 0 ? (vinilexVol / vinilexTarget) * 100 : 0;
             const vinilexDisplayPct = vinilexPct > 100 ? 100 : vinilexPct;
             document.getElementById('vinilex-target-stat').innerHTML = `${vinilexVol.toLocaleString('id-ID')} / ${vinilexTarget.toLocaleString('id-ID')} <span class="text-xs font-normal">Kg</span>`;
@@ -1624,7 +1634,6 @@
             document.getElementById('vinilex-total-rev').innerText = formatIDR(vinilexRev);
             document.getElementById('vinilex-total-vol').innerText = `${vinilexVol.toLocaleString('id-ID')} Kg`;
 
-            // RENDER KARTU FOKUS BIASA
             const grid = document.getElementById('fokus-grid'); grid.innerHTML = '';
             if(state.fokus.length === 0) {
                 grid.innerHTML = `<div class="col-span-full text-center py-6 text-gray-400 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm"><i class="fas fa-eye text-3xl mb-2 text-gray-200 dark:text-gray-600"></i><br>Belum ada produk fokus tambahan.</div>`;
