@@ -1237,9 +1237,10 @@
             document.querySelectorAll('.btn-del-canvasing').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (state.isGuest) return;
+                    const id = e.currentTarget.dataset.id; // Simpan ID di sini
                     showConfirm('Hapus Canvasing', 'Data dan foto canvasing ini akan dihapus permanen.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(getDocRef('canvasing', e.currentTarget.dataset.id));
+                        await deleteDoc(getDocRef('canvasing', id)); // Gunakan variabel id
                         showToast('Data berhasil dihapus');
                     });
                 });
@@ -1452,10 +1453,10 @@
             document.querySelectorAll('.btn-del-produk').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (state.isGuest) return;
+                    const id = e.currentTarget.dataset.id; // Simpan ID di sini
                     showConfirm('Hapus Produk', 'Aksi ini tidak akan menghapus riwayat laporan penjualan sebelumnya.', async () => {
                         if(!state.user) return;
-                        const id = e.currentTarget.dataset.id;
-                        await deleteDoc(getDocRef('produk', id));
+                        await deleteDoc(getDocRef('produk', id)); // Gunakan variabel id
                         const f = state.fokus.find(f => f.productId === id);
                         if(f) await deleteDoc(getDocRef('fokus', f.id));
                         showToast('Produk dihapus');
@@ -1671,9 +1672,10 @@
             document.querySelectorAll('.btn-del-laporan').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (state.isGuest) return;
+                    const id = e.currentTarget.dataset.id; // Simpan ID di sini
                     showConfirm('Hapus Laporan', 'Yakin ingin menghapus laporan ini? Stok yang berkurang tidak dikembalikan otomatis.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(getDocRef('laporan', e.currentTarget.dataset.id));
+                        await deleteDoc(getDocRef('laporan', id)); // Gunakan variabel id
                         showToast('Laporan dihapus');
                     });
                 });
