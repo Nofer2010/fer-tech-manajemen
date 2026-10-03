@@ -1583,7 +1583,7 @@
             renderLaporan();
         });
 
-        function renderLaporan() {
+              function renderLaporan() {
             const tbody = document.getElementById('laporan-tbody');
             tbody.innerHTML = '';
             
@@ -1594,7 +1594,6 @@
 
                 let matchSearch = true;
                 if (laporanSearch) {
-                    // Pencarian HANYA NAMA BARANG
                     matchSearch = l.productName.toLowerCase().includes(laporanSearch);
                 }
 
@@ -1613,57 +1612,133 @@
                 return matchSearch && matchKategori && matchDate;
             });
 
-            // HITUNG TOTAL PENJUALAN BERDASARKAN HASIL PENCARIAN
             let totalFilteredRp = 0;
 
+            // 1. KELOMPOKKAN DATA BERDASARKAN BULAN (YYYY-MM)
+            const groupedByMonth = {};
+            
             filteredLaporan.forEach(l => {
-                const p = state.produk.find(pr => pr.id === l.productId);
-                const pKategori = p ? p.kategori : '-';
+                const monthKey = l.date.substring(0, 7); 
+                if (!groupedByMonth[monthKey]) {
+                    groupedByMonth[monthKey] = {
+                        totalOmzet: 0,
+                        items: []
+                    };
+                }
+                groupedByMonth[monthKey].totalOmzet += (l.total || 0);
+                groupedByMonth[monthKey].items.push(l);
                 
                 totalFilteredRp += (l.total || 0);
-
-                // Format Tanggal Indo
-                let displayDate = l.date;
-                try {
-                    const d = new Date(l.date);
-                    if(!isNaN(d)) {
-                        displayDate = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-                    }
-                } catch(e) {}
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="py-3 px-5 whitespace-nowrap text-gray-800 dark:text-gray-200 font-medium">${displayDate}</td>
-                    <td class="py-3 px-5 whitespace-nowrap">
-                        <div class="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase mb-0.5 tracking-wider">${pKategori}</div>
-                        <div class="font-bold text-gray-800 dark:text-gray-100">${l.productName}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">${l.volume} ${l.satuan}</div>
-                    </td>
-                    <td class="py-3 px-5 font-semibold text-gray-800 dark:text-gray-200">${l.qtySold}</td>
-                    <td class="py-3 px-5 font-bold text-green-600 dark:text-green-400 whitespace-nowrap">${formatIDR(l.total)}</td>
-                    <td class="py-3 px-5 text-right whitespace-nowrap action-col">
-                        <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-laporan" data-id="${l.id}"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-laporan" data-id="${l.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
             });
 
-            // UPDATE ANGKA TOTAL DI UI
+            // 2. RENDER GRUP BULAN DAN ITEMNYA
+            const sortedMonths = Object.keys(groupedByMonth).sort().reverse(); // Terbaru di atas
+
+            if (sortedMonths.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500 dark:text-gray-400 font-medium"><i class="fas fa-folder-open text-3xl mb-3 block text-gray-300 dark:text-gray-600"></i>Belum ada data laporan penjualan.</td></tr>';
+            }
+
+            sortedMonths.forEach(monthKey => {
+                const group = groupedByMonth[monthKey];
+                
+                // Format nama bulan (contoh: Oktober 2026)
+                const [year, month] = monthKey.split('-');
+                const dateObj = new Date(year, month - 1);
+                const monthName = dateObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+                // A. BUAT BARIS HEADER REKAP BULANAN
+                const trHeader = document.createElement('tr');
+                trHeader.className = "bg-blue-50/80 dark:bg-blue-900/20 hover:bg-blue-100/80 dark:hover:bg-blue-900/40 transition-colors cursor-pointer border-y border-blue-100 dark:border-blue-800/50 shadow-sm";
+                trHeader.innerHTML = `
+                    <td colspan="3" class="py-4 px-5 font-bold text-blue-800 dark:text-blue-300">
+                        <i class="fas fa-calendar-alt mr-2"></i> Rekap ${monthName}
+                        <span class="ml-3 px-2.5 py-1 bg-white dark:bg-gray-800 text-xs rounded-lg text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-700/50">${group.items.length} Transaksi</span>
+                    </td>
+                    <td class="py-4 px-5 font-black text-green-600 dark:text-green-400 whitespace-nowrap text-lg">
+                        ${formatIDR(group.totalOmzet)}
+                    </td>
+                    <td class="py-4 px-5 text-right">
+                        <button class="text-blue-600 dark:text-blue-400 text-sm font-semibold px-4 py-1.5 rounded-xl bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700/50 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors toggle-detail-btn shadow-sm">
+                            Lihat Detail <i class="fas fa-chevron-down ml-1"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(trHeader);
+
+                // B. BUAT BARIS DETAIL TRANSAKSI (DISEMBUNYIKAN SECARA DEFAULT)
+                group.items.forEach(l => {
+                    const p = state.produk.find(pr => pr.id === l.productId);
+                    const pKategori = p ? p.kategori : '-';
+                    
+                    let displayDate = l.date;
+                    try {
+                        const d = new Date(l.date);
+                        if(!isNaN(d)) {
+                            displayDate = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                        }
+                    } catch(e) {}
+                    
+                    const trDetail = document.createElement('tr');
+                    // Tambahkan class hidden agar tidak langsung muncul
+                    trDetail.className = `detail-row-${monthKey} bg-white dark:bg-gray-800 hidden`;
+                    trDetail.innerHTML = `
+                        <td class="py-3 px-5 whitespace-nowrap text-gray-500 dark:text-gray-400 text-sm font-medium pl-8 border-l-4 border-blue-200 dark:border-blue-800/50">${displayDate}</td>
+                        <td class="py-3 px-5 whitespace-nowrap">
+                            <div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase mb-0.5 tracking-wider">${pKategori}</div>
+                            <div class="font-bold text-gray-800 dark:text-gray-100 text-sm">${l.productName}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">${l.volume} ${l.satuan}</div>
+                        </td>
+                        <td class="py-3 px-5 font-semibold text-gray-700 dark:text-gray-300">${l.qtySold}</td>
+                        <td class="py-3 px-5 font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${formatIDR(l.total)}</td>
+                        <td class="py-3 px-5 text-right whitespace-nowrap action-col">
+                            <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-laporan" data-id="${l.id}"><i class="fas fa-edit"></i></button>
+                            <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-laporan" data-id="${l.id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(trDetail);
+                });
+
+                // C. LOGIKA KLIK UNTUK BUKA/TUTUP DETAIL
+                trHeader.addEventListener('click', (e) => {
+                    const rows = document.querySelectorAll(`.detail-row-${monthKey}`);
+                    if (rows.length === 0) return;
+                    
+                    const isHidden = rows[0].classList.contains('hidden');
+                    const btn = trHeader.querySelector('.toggle-detail-btn');
+                    
+                    rows.forEach(r => r.classList.toggle('hidden'));
+                    
+                    if (isHidden) {
+                        btn.innerHTML = 'Tutup Detail <i class="fas fa-chevron-up ml-1"></i>';
+                        btn.classList.add('bg-blue-50', 'dark:bg-gray-700');
+                    } else {
+                        btn.innerHTML = 'Lihat Detail <i class="fas fa-chevron-down ml-1"></i>';
+                        btn.classList.remove('bg-blue-50', 'dark:bg-gray-700');
+                    }
+                });
+            });
+
+            // UPDATE ANGKA TOTAL KESELURUHAN DI FOOTER
             const totalEl = document.getElementById('laporan-filtered-total');
             if (totalEl) {
                 totalEl.innerText = formatIDR(totalFilteredRp);
             }
 
+            // PASANG KEMBALI FUNGSI TOMBOL EDIT & HAPUS
             document.querySelectorAll('.btn-edit-laporan').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (state.isGuest) return;
+                    e.stopPropagation(); // Cegah baris tertutup saat klik edit
                     const item = state.laporan.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
-                        document.getElementById('laporan-id').value = item.id; document.getElementById('laporan-date').value = item.date;
-                        document.getElementById('laporan-produk').value = item.productId; document.getElementById('laporan-qty').value = item.qtySold;
-                        document.getElementById('laporan-harga').value = item.price; updateLaporanTotal();
-                        document.getElementById('laporan-form-title').innerText = 'Edit Laporan'; document.getElementById('laporan-reset').classList.remove('hide');
+                        document.getElementById('laporan-id').value = item.id; 
+                        document.getElementById('laporan-date').value = item.date;
+                        document.getElementById('laporan-produk').value = item.productId; 
+                        document.getElementById('laporan-qty').value = item.qtySold;
+                        document.getElementById('laporan-harga').value = item.price; 
+                        updateLaporanTotal();
+                        document.getElementById('laporan-form-title').innerText = 'Edit Laporan'; 
+                        document.getElementById('laporan-reset').classList.remove('hide');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 });
@@ -1672,15 +1747,17 @@
             document.querySelectorAll('.btn-del-laporan').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (state.isGuest) return;
-                    const id = e.currentTarget.dataset.id; // Simpan ID di sini
+                    e.stopPropagation(); // Cegah baris tertutup saat klik hapus
+                    const id = e.currentTarget.dataset.id;
                     showConfirm('Hapus Laporan', 'Yakin ingin menghapus laporan ini? Stok yang berkurang tidak dikembalikan otomatis.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(getDocRef('laporan', id)); // Gunakan variabel id
+                        await deleteDoc(getDocRef('laporan', id));
                         showToast('Laporan dihapus');
                     });
                 });
             });
         }
+
 
         /* --- FOKUS DENGAN TARGET BULANAN DAN RM SPECIAL CARDS --- */
         document.getElementById('form-fokus').addEventListener('submit', async (e) => {
