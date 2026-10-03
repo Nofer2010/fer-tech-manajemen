@@ -1896,19 +1896,26 @@
             });
         }
 
-        /* --- DASHBOARD --- */
+              /* --- DASHBOARD --- */
         function renderDashboard() {
             const now = new Date();
             const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             
             let omzetBulanIni = 0;
-            state.laporan.forEach(l => { if (l.date.startsWith(currentMonthStr)) omzetBulanIni += l.total; });
+            state.laporan.forEach(l => { 
+                // [UPDATE] Filter laporan: hanya jumlahkan omzet jika produk termasuk kategori CCM
+                const product = state.produk.find(p => p.id === l.productId);
+                if (product && product.kategori && product.kategori.trim().toUpperCase().includes('CCM')) {
+                    if (l.date.startsWith(currentMonthStr)) omzetBulanIni += l.total; 
+                }
+            });
 
             const targetBulanIniObj = state.targets.find(t => t.month === currentMonthStr);
             const targetBulanIni = targetBulanIniObj ? targetBulanIniObj.amount : 0;
 
             document.getElementById('dash-omzet-total').innerText = formatIDR(omzetBulanIni);
-            document.getElementById('dash-omzet-subtitle').innerText = `Bulan: ${currentMonthStr}`;
+            // [UPDATE] Tambahkan teks "(Khusus CCM)" agar di tampilan jelas bahwa ini omzet terfilter
+            document.getElementById('dash-omzet-subtitle').innerText = `Bulan: ${currentMonthStr} (Khusus CCM)`;
             
             let percent = targetBulanIni > 0 ? (omzetBulanIni / targetBulanIni) * 100 : 0;
             let displayPercent = percent > 100 ? 100 : percent;
@@ -1928,7 +1935,14 @@
             const months = Array.from({length: 12}, (_, i) => `${yearStr}-${String(i + 1).padStart(2, '0')}`);
             
             const omzetDataMap = {};
-            state.laporan.forEach(l => { const m = l.date.substring(0, 7); omzetDataMap[m] = (omzetDataMap[m] || 0) + l.total; });
+            state.laporan.forEach(l => { 
+                // [UPDATE] Filter juga data untuk Grafik Tahunan agar sinkron khusus CCM
+                const product = state.produk.find(p => p.id === l.productId);
+                if (product && product.kategori && product.kategori.trim().toUpperCase().includes('CCM')) {
+                    const m = l.date.substring(0, 7); 
+                    omzetDataMap[m] = (omzetDataMap[m] || 0) + l.total; 
+                }
+            });
             const targetDataMap = {}; state.targets.forEach(t => { targetDataMap[t.month] = t.amount; });
 
             const labels = months.map(m => {
@@ -1951,8 +1965,8 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Omzet (Rp)', data: dataOmzet, backgroundColor: 'rgba(37, 99, 235, 0.9)', borderRadius: 6, barPercentage: 0.45, categoryPercentage: 0.7 },
-                        { label: 'Target (Rp)', data: dataTarget, backgroundColor: 'rgba(239, 68, 68, 0.9)', borderRadius: 6, barPercentage: 0.45, categoryPercentage: 0.7 }
+                        { label: 'Omzet CCM (Rp)', data: dataOmzet, backgroundColor: 'rgba(37, 99, 235, 0.9)', borderRadius: 6, barPercentage: 0.45, categoryPercentage: 0.7 },
+                        { label: 'Target CCM (Rp)', data: dataTarget, backgroundColor: 'rgba(239, 68, 68, 0.9)', borderRadius: 6, barPercentage: 0.45, categoryPercentage: 0.7 }
                     ]
                 },
                 options: {
