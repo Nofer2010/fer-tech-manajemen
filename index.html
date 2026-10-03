@@ -741,6 +741,14 @@
         </div>
     </div>
 
+    <!-- Modal Preview Foto -->
+    <div id="modal-preview-foto" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 opacity-0 visibility-hidden transition-all duration-300 backdrop-blur-sm" style="visibility: hidden;" onclick="closePreviewFoto()">
+        <div class="relative max-w-4xl mx-4 w-full flex justify-center transform scale-95 transition-transform duration-300" id="preview-foto-content" onclick="event.stopPropagation()">
+            <button onclick="closePreviewFoto()" class="absolute -top-12 right-0 text-white hover:text-gray-300 text-3xl transition-colors"><i class="fas fa-times"></i></button>
+            <img id="preview-foto-img" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl object-contain">
+        </div>
+    </div>
+
     <!-- Modern Toast Container -->
     <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none items-end w-full max-w-[calc(100vw-3rem)] md:max-w-sm"></div>
 
@@ -858,6 +866,26 @@
             if (confirmAction) confirmAction();
             closeConfirm();
         });
+
+        window.openPreviewFoto = function(src) {
+            document.getElementById('preview-foto-img').src = src;
+            const modal = document.getElementById('modal-preview-foto');
+            modal.style.visibility = 'visible';
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            document.getElementById('preview-foto-content').classList.replace('scale-95', 'scale-100');
+        }
+
+        window.closePreviewFoto = function() {
+            const modal = document.getElementById('modal-preview-foto');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            document.getElementById('preview-foto-content').classList.replace('scale-100', 'scale-95');
+            setTimeout(() => { 
+                modal.style.visibility = 'hidden';
+                document.getElementById('preview-foto-img').src = ''; 
+            }, 300);
+        }
 
         window.openModalFokus = function() { document.getElementById('modal-fokus').classList.add('active'); }
         window.closeModalFokus = function() { document.getElementById('modal-fokus').classList.remove('active'); }
@@ -1099,7 +1127,7 @@
                 img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
+                    const MAX_WIDTH = 1200; // Resolusi dinaikkan agar gambar tidak pecah
                     let width = img.width;
                     let height = img.height;
 
@@ -1113,7 +1141,17 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                    // Mulai kompresi awal
+                    let quality = 0.8;
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    
+                    // Iterasi kompresi: 1 MB setara dengan sekitar 1.370.000 karakter Base64
+                    // Jika ukuran file masih lebih besar dari 1MB, turunkan kualitasnya bertahap
+                    while (dataUrl.length > 1370000 && quality > 0.1) {
+                        quality -= 0.1;
+                        dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    }
+
                     document.getElementById('canvasing-foto-base64').value = dataUrl;
                     
                     const preview = document.getElementById('canvasing-preview');
@@ -1198,7 +1236,7 @@
                 tr.innerHTML = `
                     <td class="py-3 px-5 dark:text-gray-200 align-middle">${displayDate}</td>
                     <td class="py-3 px-5 align-middle">
-                        <img src="${item.fotoBase64}" class="w-20 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${item.fotoBase64}')" title="Klik untuk perbesar">
+                        <img src="${item.fotoBase64}" class="w-20 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm cursor-pointer hover:opacity-80 transition-opacity" onclick="openPreviewFoto('${item.fotoBase64}')" title="Klik untuk perbesar">
                     </td>
                     <td class="py-3 px-5 text-gray-500 dark:text-gray-400 align-middle">
                         <a href="https://www.google.com/maps/search/?api=1&query=${item.lokasi}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors text-xs font-semibold">
