@@ -80,17 +80,6 @@
             box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.2);
         }
 
-        /* --- GUEST MODE CSS (Read-Only) --- */
-        body.guest-mode .form-card { display: none !important; }
-        body.guest-mode .action-col { display: none !important; }
-        body.guest-mode .guest-hide { display: none !important; }
-        @media (min-width: 1024px) {
-            body.guest-mode .table-card { grid-column: span 3 / span 3 !important; }
-        }
-        @media (min-width: 1280px) {
-            body.guest-mode .table-card-xl { grid-column: span 3 / span 3 !important; }
-        }
-
         /* Canvasing Image Preview */
         #canvasing-preview {
             display: none;
@@ -102,6 +91,52 @@
             border: 1px solid #e5e7eb;
         }
         .dark #canvasing-preview { border-color: #374151; }
+
+        /* ==================================================== */
+        /* CSS KHUSUS ROL CAT 3D REALISTIS                      */
+        /* ==================================================== */
+        .roller-3d {
+            position: absolute;
+            top: -22px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 45px;
+            background: linear-gradient(to bottom, #1e3a8a 0%, #3b82f6 30%, #2563eb 60%, #1e3a8a 100%);
+            border-radius: 25px;
+            box-shadow: 
+                0 15px 15px -5px rgba(0,0,0,0.3),
+                inset 0 -5px 10px rgba(0,0,0,0.3),
+                inset 0 4px 5px rgba(255,255,255,0.4);
+        }
+        
+        .roller-3d::before {
+            content: '';
+            position: absolute;
+            top: calc(50% - 4px);
+            right: -25px;
+            width: 35px;
+            height: 80px;
+            border-top: 8px solid #cbd5e1;
+            border-right: 8px solid #94a3b8;
+            border-top-right-radius: 12px;
+            z-index: -1;
+        }
+        
+        .roller-3d::after {
+            content: '';
+            position: absolute;
+            top: 85px;
+            right: -35px;
+            width: 28px;
+            height: 90px;
+            background: linear-gradient(to right, #991b1b, #ef4444, #7f1d1d);
+            border-radius: 5px 5px 15px 15px;
+            box-shadow: 
+                5px 10px 15px rgba(0,0,0,0.3), 
+                inset -2px -2px 5px rgba(0,0,0,0.4);
+            border: 1px solid #7f1d1d;
+        }
     </style>
 </head>
 <body class="text-gray-800 dark:text-gray-100 h-screen overflow-hidden flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -120,17 +155,27 @@
 
     <!-- Login View -->
     <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-900 hide">
-        <div class="glass-effect p-8 rounded-3xl shadow-2xl w-full max-w-md mx-4 transform transition-all border border-white/20 dark:border-gray-700/50">
-            <div class="text-center mb-8">
+        <div class="glass-effect p-8 rounded-3xl shadow-2xl w-full max-w-md mx-4 transform transition-all border border-white/20 dark:border-gray-700/50 relative overflow-hidden">
+
+            <!-- Elemen Layer Cat -->
+            <div id="paint-wipe-overlay" class="absolute left-0 w-full bg-blue-600 dark:bg-blue-500 z-50 pointer-events-none" style="top: 0; height: 0;"></div>
+
+            <!-- Elemen Gagang Rol Cat 3D -->
+            <div id="paint-roller-icon" class="absolute left-0 w-full z-[51] pointer-events-none opacity-0" style="top: 0%;">
+                <div class="roller-3d"></div>
+            </div>
+
+            <!-- Teks Judul & Ikon -->
+            <div class="text-center mb-8 relative z-10">
                 <div class="inline-block p-4 bg-blue-100 dark:bg-blue-900/50 rounded-2xl mb-4 shadow-inner">
                     <i class="fas fa-paint-roller text-3xl text-blue-600 dark:text-blue-400"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Paint CRM</h1>
-                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Masuk untuk mengelola bisnis Anda</p>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white transition-opacity duration-300" id="auth-title">Paint CRM</h1>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 transition-opacity duration-300" id="auth-subtitle">Masuk untuk mengelola bisnis Anda</p>
             </div>
             
             <!-- Form Login -->
-            <form id="login-form" class="space-y-5">
+            <form id="login-form" class="space-y-5 relative z-10">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                     <div class="relative">
@@ -156,10 +201,6 @@
                     <span>Masuk</span>
                     <i class="fas fa-arrow-right"></i>
                 </button>
-                <button type="button" id="btn-guest" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-3 rounded-xl transition-all shadow-sm mt-3 flex justify-center items-center gap-2">
-                    <i class="fas fa-user-secret"></i>
-                    <span>Masuk sebagai Tamu (View-Only)</span>
-                </button>
                 <div class="text-center mt-3">
                     <button type="button" id="show-register" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">Belum punya akun? Daftar sekarang</button>
                 </div>
@@ -169,7 +210,7 @@
             </form>
 
             <!-- Form Registrasi -->
-            <form id="register-form" class="space-y-5 hide">
+            <form id="register-form" class="space-y-5 hide relative z-10">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Baru</label>
                     <div class="relative">
@@ -287,7 +328,7 @@
                             </div>
                         </div>
                         
-                        <!-- Card 3: Pencapaian Target Harian (BARU) -->
+                        <!-- Card 3: Pencapaian Target Harian -->
                         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-semibold text-gray-600 dark:text-gray-300">Pencapaian Hari Ini</h3>
@@ -325,7 +366,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <!-- Form Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit form-card">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-500"></i> <span id="canvasing-form-title">Tambah Canvasing</span></h3>
                             <form id="form-canvasing" class="space-y-4">
                                 <input type="hidden" id="canvasing-id">
@@ -355,7 +396,7 @@
                         </div>
                         
                         <!-- Table Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full table-card">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full">
                             <div class="overflow-x-auto w-full max-h-[500px]">
                                 <table class="w-full text-left border-collapse whitespace-nowrap">
                                     <thead class="sticky top-0 bg-gray-50 dark:bg-gray-700 z-10">
@@ -363,7 +404,7 @@
                                             <th class="py-4 px-5 font-semibold">Tanggal</th>
                                             <th class="py-4 px-5 font-semibold">Canvasing</th>
                                             <th class="py-4 px-5 font-semibold">Keterangan</th>
-                                            <th class="py-4 px-5 font-semibold text-right action-col">Aksi</th>
+                                            <th class="py-4 px-5 font-semibold text-right">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="canvasing-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
@@ -388,7 +429,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <!-- Form Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit form-card">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-bullseye text-blue-500"></i> Set Target Bulan Ini</h3>
                             <form id="form-target" class="space-y-4">
                                 <div>
@@ -404,7 +445,7 @@
                         </div>
                         
                         <!-- Table/Progress Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden w-full max-w-full table-card">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden w-full max-w-full">
                             <div class="overflow-x-auto w-full max-h-[500px]">
                                 <table class="w-full text-left border-collapse whitespace-nowrap">
                                     <thead class="sticky top-0 bg-gray-50 dark:bg-gray-700 z-10">
@@ -435,7 +476,7 @@
 
                     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                         <!-- Form Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 xl:col-span-1 h-fit form-card">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 xl:col-span-1 h-fit">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-box-open text-blue-500"></i> <span id="produk-form-title">Tambah Produk</span></h3>
                             <form id="form-produk" class="space-y-4">
                                 <input type="hidden" id="produk-id">
@@ -481,7 +522,7 @@
                         </div>
                         
                         <!-- Table Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 xl:col-span-2 overflow-hidden flex flex-col w-full max-w-full table-card-xl">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 xl:col-span-2 overflow-hidden flex flex-col w-full max-w-full">
                             <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-800/80">
                                 <div class="relative flex-1 w-full max-w-full sm:max-w-xs">
                                     <i class="fas fa-search absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -500,7 +541,7 @@
                                             <th class="py-3 px-5 font-semibold">Qty</th>
                                             <th class="py-3 px-5 font-semibold">Volume/Berat</th>
                                             <th class="py-3 px-5 font-semibold">Harga</th>
-                                            <th class="py-3 px-5 font-semibold text-right action-col">Aksi</th>
+                                            <th class="py-3 px-5 font-semibold text-right">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="produk-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
@@ -521,7 +562,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <!-- Form Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit form-card">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 lg:col-span-1 h-fit">
                             <h3 class="font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-file-invoice-dollar text-blue-500"></i> <span id="laporan-form-title">Tambah Laporan</span></h3>
                             <form id="form-laporan" class="space-y-4">
                                 <input type="hidden" id="laporan-id">
@@ -557,20 +598,19 @@
                         </div>
                         
                         <!-- Table Card with Modern Search Filters -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full table-card">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 lg:col-span-2 overflow-hidden flex flex-col w-full max-w-full">
                             <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-800/80">
-                                <!-- Text Search (Hanya untuk Nama Produk) -->
+                                <!-- Text Search -->
                                 <div class="relative flex-1 w-full max-w-full md:max-w-xs">
                                     <i class="fas fa-search absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                                     <input type="text" id="laporan-search" placeholder="Cari nama produk..." class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-800 dark:text-white shadow-sm">
                                 </div>
                                 <!-- Group Filter Tanggal & Kategori -->
                                 <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                                    <input type="date" id="laporan-filter-date" title="Filter Harian (Tgl, Bln, Thn)" class="flex-1 md:flex-none px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-700 font-medium text-gray-600 dark:text-gray-300 shadow-sm">
-                                    <input type="month" id="laporan-filter-month" title="Filter Bulanan (Bulan & Tahun)" class="flex-1 md:flex-none px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-700 font-medium text-gray-600 dark:text-gray-300 shadow-sm">
+                                    <input type="date" id="laporan-filter-date" title="Filter Harian" class="flex-1 md:flex-none px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-700 font-medium text-gray-600 dark:text-gray-300 shadow-sm">
+                                    <input type="month" id="laporan-filter-month" title="Filter Bulanan" class="flex-1 md:flex-none px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-700 font-medium text-gray-600 dark:text-gray-300 shadow-sm">
                                     <select id="laporan-filter-kategori" class="flex-1 md:flex-none px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-gray-700 font-medium text-gray-600 dark:text-gray-300 shadow-sm">
                                         <option value="">Semua Kategori</option>
-                                        <!-- Options generated by JS -->
                                     </select>
                                 </div>
                             </div>
@@ -582,7 +622,7 @@
                                             <th class="py-4 px-5 font-semibold min-w-[150px]">Produk</th>
                                             <th class="py-4 px-5 font-semibold">Qty</th>
                                             <th class="py-4 px-5 font-semibold">Total Rp</th>
-                                            <th class="py-4 px-5 font-semibold text-right action-col">Aksi</th>
+                                            <th class="py-4 px-5 font-semibold text-right">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="laporan-tbody" class="text-sm divide-y divide-gray-50 dark:divide-gray-700">
@@ -606,7 +646,7 @@
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Produk Fokus</h2>
                             <p class="text-gray-500 dark:text-gray-400 text-sm">Pantau performa penjualan produk unggulan Anda.</p>
                         </div>
-                        <button onclick="openModalFokus()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2 guest-hide">
+                        <button onclick="openModalFokus()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2">
                             <i class="fas fa-plus"></i> Tambah Produk Fokus
                         </button>
                     </div>
@@ -623,7 +663,7 @@
                             <div class="px-6 py-4 border-b border-gray-50 dark:border-gray-700">
                                 <div class="flex justify-between items-end mb-1">
                                     <span class="text-xs font-semibold text-gray-500 dark:text-gray-400" id="elastex-target-month-label">Target Bulan Ini</span>
-                                    <button class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline action-col" onclick="openTargetRmSpecial('elastex')">Set Target</button>
+                                    <button class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline" onclick="openTargetRmSpecial('elastex')">Set Target</button>
                                 </div>
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-sm font-bold text-gray-800 dark:text-gray-100" id="elastex-target-stat">0 / 0 <span class="text-xs font-normal">Kg</span></span>
@@ -655,7 +695,7 @@
                             <div class="px-6 py-4 border-b border-gray-50 dark:border-gray-700">
                                 <div class="flex justify-between items-end mb-1">
                                     <span class="text-xs font-semibold text-gray-500 dark:text-gray-400" id="vinilex-target-month-label">Target Bulan Ini</span>
-                                    <button class="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline action-col" onclick="openTargetRmSpecial('vinilex')">Set Target</button>
+                                    <button class="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline" onclick="openTargetRmSpecial('vinilex')">Set Target</button>
                                 </div>
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-sm font-bold text-gray-800 dark:text-gray-100" id="vinilex-target-stat">0 / 0 <span class="text-xs font-normal">Kg</span></span>
@@ -815,14 +855,6 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ==========================================
-        // KONFIGURASI MODE TAMU
-        // ==========================================
-        const GUEST_EMAIL = "iffan@tlnippon.com"; 
-        const GUEST_PASS = "Tlnippon123"
-        const ADMIN_UID = "y2ZwM5LvARRHf6sZnncD76tb4hv2"; 
-        // ==========================================
-
         const firebaseConfig = {
             apiKey: "AIzaSyD26J8tx8RfSxQP9Acd_ehNU7ol_1Wsrlc",
             authDomain: "fer-tech-manajemen.firebaseapp.com",
@@ -839,7 +871,7 @@
 
         // Global State
         const state = {
-            user: null, userId: null, isGuest: false,
+            user: null, userId: null,
             canvasing: [], targets: [], produk: [], laporan: [], fokus: [], rmTargets: {},
             unsubscribes: [], dashboardChart: null
         };
@@ -974,7 +1006,7 @@
 
         document.getElementById('form-target-rm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user || state.isGuest) return;
+            if(!state.user) return;
             const productKey = document.getElementById('rm-product-key').value;
             const amount = parseInt(document.getElementById('rm-tf-amount').value);
             const now = new Date();
@@ -997,7 +1029,7 @@
 
         document.getElementById('form-target-fokus').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user || state.isGuest) return;
+            if(!state.user) return;
             const id = document.getElementById('tf-id').value;
             const month = document.getElementById('tf-month').value;
             const amount = parseInt(document.getElementById('tf-amount').value);
@@ -1069,14 +1101,80 @@
             }
         });
 
-        // --- LOGIKA TOGGLE FORM LOGIN & REGISTER ---
+        // --- LOGIKA TOGGLE FORM LOGIN & REGISTER (EFEK ROL CAT + GAGANG) ---
+        function animateAuthSwitch(isToRegister) {
+            const wipe = document.getElementById('paint-wipe-overlay');
+            const roller = document.getElementById('paint-roller-icon');
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const title = document.getElementById('auth-title');
+            const subtitle = document.getElementById('auth-subtitle');
+
+            roller.style.transition = 'none';
+            wipe.style.transition = 'none';
+            
+            roller.style.top = '0%';
+            roller.style.opacity = '1';
+            wipe.style.top = '0';
+            wipe.style.bottom = 'auto';
+            wipe.style.height = '0';
+
+            void roller.offsetWidth; 
+
+            roller.style.transition = 'all 500ms ease-in-out';
+            wipe.style.transition = 'all 500ms ease-in-out';
+            
+            roller.style.top = '100%';
+            wipe.style.height = '100%';
+            
+            title.style.opacity = '0';
+            subtitle.style.opacity = '0';
+
+            setTimeout(() => {
+                if (isToRegister) {
+                    loginForm.classList.add('hide');
+                    regForm.classList.remove('hide');
+                    title.innerText = 'Daftar Akun';
+                    subtitle.innerText = 'Buat akun baru Paint CRM';
+                } else {
+                    regForm.classList.add('hide');
+                    loginForm.classList.remove('hide');
+                    title.innerText = 'Paint CRM';
+                    subtitle.innerText = 'Masuk untuk mengelola bisnis Anda';
+                }
+
+                title.style.opacity = '1';
+                subtitle.style.opacity = '1';
+
+                roller.style.transition = 'none';
+                roller.style.top = '0%';
+                
+                wipe.style.transition = 'none';
+                wipe.style.top = 'auto';
+                wipe.style.bottom = '0';
+                wipe.style.height = '100%';
+
+                void roller.offsetWidth; 
+
+                roller.style.transition = 'all 500ms ease-in-out';
+                wipe.style.transition = 'all 500ms ease-in-out';
+                
+                roller.style.top = '100%';
+                wipe.style.height = '0'; 
+
+                setTimeout(() => {
+                    roller.style.opacity = '0';
+                }, 500);
+
+            }, 500); 
+        }
+
         document.getElementById('show-register').addEventListener('click', () => {
-            document.getElementById('login-form').classList.add('hide');
-            document.getElementById('register-form').classList.remove('hide');
+            animateAuthSwitch(true);
         });
+        
         document.getElementById('show-login').addEventListener('click', () => {
-            document.getElementById('register-form').classList.add('hide');
-            document.getElementById('login-form').classList.remove('hide');
+            animateAuthSwitch(false);
         });
 
         // --- LOGIKA PENDAFTARAN ---
@@ -1092,7 +1190,6 @@
             try { 
                 await createUserWithEmailAndPassword(auth, email, password);
                 showToast("Akun berhasil dibuat! Silakan masuk.", 'success');
-                // Alihkan kembali ke form login
                 document.getElementById('show-login').click(); 
                 document.getElementById('login-email').value = email; 
                 document.getElementById('register-form').reset();
@@ -1107,20 +1204,6 @@
             }
         });
 
-        document.getElementById('btn-guest')?.addEventListener('click', async () => {
-            const btn = document.getElementById('btn-guest');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
-            btn.disabled = true;
-            try {
-                await signInWithEmailAndPassword(auth, GUEST_EMAIL, GUEST_PASS);
-                showToast("Berhasil masuk mode Tamu", 'success');
-            } catch (error) {
-                showToast("Gagal login tamu. Pastikan akun sudah dibuat di Firebase!", 'error');
-                btn.innerHTML = '<i class="fas fa-user-secret"></i> <span>Masuk sebagai Tamu (View-Only)</span>';
-                btn.disabled = false;
-            }
-        });
-
         document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
 
         onAuthStateChanged(auth, (user) => {
@@ -1129,34 +1212,21 @@
                 viewLoading.classList.add('hide'); 
                 if (user) {
                     state.user = user; 
-                    state.isGuest = (user.email === GUEST_EMAIL);
-                    state.userId = state.isGuest ? ADMIN_UID : user.uid;
+                    state.userId = user.uid;
 
                     viewLogin.classList.add('hide'); 
                     viewApp.classList.remove('hide');
 
-                    if (state.isGuest) {
-                        document.body.classList.add('guest-mode');
-                        document.getElementById('user-id-display').innerText = "Mode Tamu (Read-Only)";
-                    } else {
-                        document.body.classList.remove('guest-mode');
-                        document.getElementById('user-id-display').innerText = user.email || `ID: ${user.uid.substring(0,6)}`;
-                    }
+                    document.getElementById('user-id-display').innerText = user.email || `ID: ${user.uid.substring(0,6)}`;
 
                     document.getElementById('login-form').reset();
                     initDataListeners(); switchView('dashboard');
                 } else {
-                    state.user = null; state.userId = null; state.isGuest = false;
+                    state.user = null; state.userId = null;
                     viewApp.classList.add('hide'); viewLogin.classList.remove('hide');
                     cleanupListeners();
                     const btn = document.getElementById('btn-login');
                     btn.innerHTML = '<span>Masuk</span><i class="fas fa-arrow-right"></i>'; btn.disabled = false;
-                    
-                    const btnGuest = document.getElementById('btn-guest');
-                    if (btnGuest) {
-                        btnGuest.innerHTML = '<i class="fas fa-user-secret"></i> <span>Masuk sebagai Tamu (View-Only)</span>';
-                        btnGuest.disabled = false;
-                    }
                 }
             }, 500); 
         });
@@ -1206,7 +1276,6 @@
             state.unsubscribes = [];
         }
 
-
         /* --- CANVASING --- */
         const formCanvasing = document.getElementById('form-canvasing');
         const tBodyCanvasing = document.getElementById('canvasing-tbody');
@@ -1223,7 +1292,7 @@
                 img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1200; // Resolusi dinaikkan agar gambar tidak pecah
+                    const MAX_WIDTH = 1200; 
                     let width = img.width;
                     let height = img.height;
 
@@ -1237,12 +1306,9 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Mulai kompresi awal
                     let quality = 0.8;
                     let dataUrl = canvas.toDataURL('image/jpeg', quality);
                     
-                    // Iterasi kompresi: 1 MB setara dengan sekitar 1.370.000 karakter Base64
-                    // Jika ukuran file masih lebih besar dari 1MB, turunkan kualitasnya bertahap
                     while (dataUrl.length > 1370000 && quality > 0.1) {
                         quality -= 0.1;
                         dataUrl = canvas.toDataURL('image/jpeg', quality);
@@ -1282,7 +1348,7 @@
 
         formCanvasing.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!state.user || state.isGuest) return;
+            if (!state.user) return;
             const id = document.getElementById('canvasing-id').value;
             const fotoBase64 = document.getElementById('canvasing-foto-base64').value;
             const lokasi = document.getElementById('canvasing-lokasi').value;
@@ -1339,7 +1405,7 @@
                             <i class="fas fa-map-marker-alt"></i> Buka Peta
                         </a>
                     </td>
-                    <td class="py-3 px-5 text-right action-col align-middle">
+                    <td class="py-3 px-5 text-right align-middle">
                         <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-canvasing" data-id="${item.id}"><i class="fas fa-edit"></i></button>
                         <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-canvasing" data-id="${item.id}"><i class="fas fa-trash"></i></button>
                     </td>
@@ -1349,7 +1415,6 @@
 
             document.querySelectorAll('.btn-edit-canvasing').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    if (state.isGuest) return;
                     const item = state.canvasing.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
                         document.getElementById('canvasing-id').value = item.id;
@@ -1370,17 +1435,15 @@
 
             document.querySelectorAll('.btn-del-canvasing').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    if (state.isGuest) return;
-                    const id = e.currentTarget.dataset.id; // Simpan ID di sini
+                    const id = e.currentTarget.dataset.id;
                     showConfirm('Hapus Canvasing', 'Data dan foto canvasing ini akan dihapus permanen.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(getDocRef('canvasing', id)); // Gunakan variabel id
+                        await deleteDoc(getDocRef('canvasing', id)); 
                         showToast('Data berhasil dihapus');
                     });
                 });
             });
         }
-
 
         /* --- TARGET BULANAN --- */
         const formTarget = document.getElementById('form-target');
@@ -1390,7 +1453,7 @@
 
         formTarget.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!state.user || state.isGuest) return;
+            if (!state.user) return;
             const monthVal = document.getElementById('target-month').value;
             const amountVal = parseFloat(document.getElementById('target-amount').value);
             const existing = state.targets.find(t => t.month === monthVal);
@@ -1477,7 +1540,6 @@
             categories.forEach(c => { filterCat.innerHTML += `<option value="${c}">${c}</option>`; });
             filterCat.value = currentFilter;
             
-            // --- DROPDOWN KATEGORI UNTUK INPUT LAPORAN ---
             const filterCatLap = document.getElementById('laporan-filter-kategori');
             if(filterCatLap) {
                 const currentFilterLap = filterCatLap.value;
@@ -1510,7 +1572,7 @@
 
         formProduk.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user || state.isGuest) return;
+            if(!state.user) return;
             const id = document.getElementById('produk-id').value;
             const kategori = isNewKategori ? inputKategoriNew.value.trim() : selKategori.value;
             if(!kategori) { showToast("Kategori harus diisi", "error"); return; }
@@ -1559,7 +1621,7 @@
                     </td>
                     <td class="py-3 px-5 text-gray-600 dark:text-gray-300 whitespace-nowrap">${p.volume} <span class="text-xs font-bold">${p.satuan}</span></td>
                     <td class="py-3 px-5 font-semibold text-blue-600 dark:text-blue-400 whitespace-nowrap">${formatIDR(p.harga || 0)}</td>
-                    <td class="py-3 px-5 text-right whitespace-nowrap action-col">
+                    <td class="py-3 px-5 text-right whitespace-nowrap">
                         <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-produk" data-id="${p.id}"><i class="fas fa-edit"></i></button>
                         <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-produk" data-id="${p.id}"><i class="fas fa-trash"></i></button>
                     </td>
@@ -1569,7 +1631,6 @@
 
             document.querySelectorAll('.btn-edit-produk').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    if (state.isGuest) return;
                     const item = state.produk.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
                         document.getElementById('produk-id').value = item.id; document.getElementById('produk-nama').value = item.nama;
@@ -1586,11 +1647,10 @@
 
             document.querySelectorAll('.btn-del-produk').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    if (state.isGuest) return;
-                    const id = e.currentTarget.dataset.id; // Simpan ID di sini
+                    const id = e.currentTarget.dataset.id; 
                     showConfirm('Hapus Produk', 'Aksi ini tidak akan menghapus riwayat laporan penjualan sebelumnya.', async () => {
                         if(!state.user) return;
-                        await deleteDoc(getDocRef('produk', id)); // Gunakan variabel id
+                        await deleteDoc(getDocRef('produk', id)); 
                         const f = state.fokus.find(f => f.productId === id);
                         if(f) await deleteDoc(getDocRef('fokus', f.id));
                         showToast('Produk dihapus');
@@ -1654,7 +1714,7 @@
 
         formLaporan.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user || state.isGuest) return;
+            if(!state.user) return;
             const id = document.getElementById('laporan-id').value;
             const productId = document.getElementById('laporan-produk').value;
             const qtySold = parseInt(lapQty.value); const price = parseFloat(lapHarga.value);
@@ -1717,11 +1777,10 @@
             renderLaporan();
         });
 
-              function renderLaporan() {
+        function renderLaporan() {
             const tbody = document.getElementById('laporan-tbody');
             tbody.innerHTML = '';
             
-            // Filter laporan berdasarkan input
             let filteredLaporan = state.laporan.filter(l => {
                 const p = state.produk.find(pr => pr.id === l.productId);
                 const pKategori = p ? p.kategori : '-';
@@ -1747,8 +1806,6 @@
             });
 
             let totalFilteredRp = 0;
-
-            // 1. KELOMPOKKAN DATA BERDASARKAN BULAN (YYYY-MM)
             const groupedByMonth = {};
             
             filteredLaporan.forEach(l => {
@@ -1761,12 +1818,10 @@
                 }
                 groupedByMonth[monthKey].totalOmzet += (l.total || 0);
                 groupedByMonth[monthKey].items.push(l);
-                
                 totalFilteredRp += (l.total || 0);
             });
 
-            // 2. RENDER GRUP BULAN DAN ITEMNYA
-            const sortedMonths = Object.keys(groupedByMonth).sort().reverse(); // Terbaru di atas
+            const sortedMonths = Object.keys(groupedByMonth).sort().reverse();
 
             if (sortedMonths.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500 dark:text-gray-400 font-medium"><i class="fas fa-folder-open text-3xl mb-3 block text-gray-300 dark:text-gray-600"></i>Belum ada data laporan penjualan.</td></tr>';
@@ -1774,13 +1829,10 @@
 
             sortedMonths.forEach(monthKey => {
                 const group = groupedByMonth[monthKey];
-                
-                // Format nama bulan (contoh: Oktober 2026)
                 const [year, month] = monthKey.split('-');
                 const dateObj = new Date(year, month - 1);
                 const monthName = dateObj.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
-                // A. BUAT BARIS HEADER REKAP BULANAN
                 const trHeader = document.createElement('tr');
                 trHeader.className = "bg-blue-50/80 dark:bg-blue-900/20 hover:bg-blue-100/80 dark:hover:bg-blue-900/40 transition-colors cursor-pointer border-y border-blue-100 dark:border-blue-800/50 shadow-sm";
                 trHeader.innerHTML = `
@@ -1799,7 +1851,6 @@
                 `;
                 tbody.appendChild(trHeader);
 
-                // B. BUAT BARIS DETAIL TRANSAKSI (DISEMBUNYIKAN SECARA DEFAULT)
                 group.items.forEach(l => {
                     const p = state.produk.find(pr => pr.id === l.productId);
                     const pKategori = p ? p.kategori : '-';
@@ -1813,7 +1864,6 @@
                     } catch(e) {}
                     
                     const trDetail = document.createElement('tr');
-                    // Tambahkan class hidden agar tidak langsung muncul
                     trDetail.className = `detail-row-${monthKey} bg-white dark:bg-gray-800 hidden`;
                     trDetail.innerHTML = `
                         <td class="py-3 px-5 whitespace-nowrap text-gray-500 dark:text-gray-400 text-sm font-medium pl-8 border-l-4 border-blue-200 dark:border-blue-800/50">${displayDate}</td>
@@ -1824,7 +1874,7 @@
                         </td>
                         <td class="py-3 px-5 font-semibold text-gray-700 dark:text-gray-300">${l.qtySold}</td>
                         <td class="py-3 px-5 font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">${formatIDR(l.total)}</td>
-                        <td class="py-3 px-5 text-right whitespace-nowrap action-col">
+                        <td class="py-3 px-5 text-right whitespace-nowrap">
                             <button class="text-blue-500 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 p-2 rounded-lg mx-1 btn-edit-laporan" data-id="${l.id}"><i class="fas fa-edit"></i></button>
                             <button class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/30 dark:hover:bg-red-800/50 p-2 rounded-lg mx-1 btn-del-laporan" data-id="${l.id}"><i class="fas fa-trash"></i></button>
                         </td>
@@ -1832,7 +1882,6 @@
                     tbody.appendChild(trDetail);
                 });
 
-                // C. LOGIKA KLIK UNTUK BUKA/TUTUP DETAIL
                 trHeader.addEventListener('click', (e) => {
                     const rows = document.querySelectorAll(`.detail-row-${monthKey}`);
                     if (rows.length === 0) return;
@@ -1852,17 +1901,14 @@
                 });
             });
 
-            // UPDATE ANGKA TOTAL KESELURUHAN DI FOOTER
             const totalEl = document.getElementById('laporan-filtered-total');
             if (totalEl) {
                 totalEl.innerText = formatIDR(totalFilteredRp);
             }
 
-            // PASANG KEMBALI FUNGSI TOMBOL EDIT & HAPUS
             document.querySelectorAll('.btn-edit-laporan').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    if (state.isGuest) return;
-                    e.stopPropagation(); // Cegah baris tertutup saat klik edit
+                    e.stopPropagation(); 
                     const item = state.laporan.find(o => o.id === e.currentTarget.dataset.id);
                     if (item) {
                         document.getElementById('laporan-id').value = item.id; 
@@ -1880,8 +1926,7 @@
 
             document.querySelectorAll('.btn-del-laporan').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    if (state.isGuest) return;
-                    e.stopPropagation(); // Cegah baris tertutup saat klik hapus
+                    e.stopPropagation(); 
                     const id = e.currentTarget.dataset.id;
                     showConfirm('Hapus Laporan', 'Yakin ingin menghapus laporan ini? Stok yang berkurang tidak dikembalikan otomatis.', async () => {
                         if(!state.user) return;
@@ -1893,10 +1938,10 @@
         }
 
 
-        /* --- FOKUS DENGAN TARGET BULANAN DAN RM SPECIAL CARDS --- */
+        /* --- FOKUS --- */
         document.getElementById('form-fokus').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!state.user || state.isGuest) return;
+            if(!state.user) return;
             const productId = document.getElementById('fokus-produk-select').value;
             if(state.fokus.some(f => f.productId === productId)) { showToast("Produk sudah ada di daftar", 'error'); return; }
             try {
@@ -1986,7 +2031,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all relative transform hover:-translate-y-1";
                 card.innerHTML = `
-                    <button class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors btn-del-fokus w-8 h-8 rounded-full hover:bg-red-500 flex items-center justify-center z-10 action-col" data-id="${f.id}" title="Hapus dari fokus"><i class="fas fa-times"></i></button>
+                    <button class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors btn-del-fokus w-8 h-8 rounded-full hover:bg-red-500 flex items-center justify-center z-10" data-id="${f.id}" title="Hapus dari fokus"><i class="fas fa-times"></i></button>
                     <div class="p-6 border-b border-gray-50 dark:border-gray-700 relative overflow-hidden">
                         <div class="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-full opacity-50"></div>
                         <div class="text-xs text-blue-600 dark:text-blue-400 font-black mb-1.5 tracking-widest uppercase relative">${p.kategori}</div>
@@ -1997,7 +2042,7 @@
                     <div class="px-6 py-4 border-b border-gray-50 dark:border-gray-700">
                         <div class="flex justify-between items-end mb-1">
                             <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Target Bulan Ini (${currentMonthStr})</span>
-                            <button class="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline action-col" onclick="openTargetFokus('${f.id}', '${currentMonthStr}', ${targetBulanIni}, '${p.nama}')">Set Target</button>
+                            <button class="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline" onclick="openTargetFokus('${f.id}', '${currentMonthStr}', ${targetBulanIni}, '${p.nama}')">Set Target</button>
                         </div>
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm font-bold text-gray-800 dark:text-gray-100">${terjualBulanIni} / ${targetBulanIni} <span class="text-xs font-normal">Qty</span></span>
@@ -2023,14 +2068,14 @@
             });
             document.querySelectorAll('.btn-del-fokus').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
-                    if(!state.user || state.isGuest) return;
+                    if(!state.user) return;
                     await deleteDoc(getDocRef('fokus', e.currentTarget.dataset.id));
                     showToast('Produk berhenti dipantau');
                 });
             });
         }
 
-              /* --- DASHBOARD --- */
+        /* --- DASHBOARD --- */
         function renderDashboard() {
             const now = new Date();
             const currentYear = now.getFullYear();
@@ -2039,25 +2084,21 @@
             const currentMonthStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             const todayStr = `${currentMonthStr}-${String(now.getDate()).padStart(2, '0')}`;
             
-            // Mencari jumlah hari pada bulan ini (contoh: 30 atau 31)
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
             
             let omzetBulanIni = 0;
             let omzetHariIni = 0;
 
             state.laporan.forEach(l => { 
-                // Filter laporan: hanya jumlahkan omzet jika produk termasuk kategori CCM
                 const product = state.produk.find(p => p.id === l.productId);
                 if (product && product.kategori && product.kategori.trim().toUpperCase().includes('CCM')) {
                     if (l.date.startsWith(currentMonthStr)) omzetBulanIni += l.total; 
-                    if (l.date === todayStr) omzetHariIni += l.total; // Kalkulasi omzet hari ini
+                    if (l.date === todayStr) omzetHariIni += l.total; 
                 }
             });
 
             const targetBulanIniObj = state.targets.find(t => t.month === currentMonthStr);
             const targetBulanIni = targetBulanIniObj ? targetBulanIniObj.amount : 0;
-            
-            // Kalkulasi Target Harian (Target Bulanan / Jumlah Hari)
             const targetHarian = targetBulanIni / daysInMonth;
 
             document.getElementById('dash-omzet-total').innerText = formatIDR(omzetBulanIni);
@@ -2074,7 +2115,6 @@
             if(percent >= 100) { bar.classList.replace('bg-blue-600', 'bg-green-500'); } 
             else { bar.classList.replace('bg-green-500', 'bg-blue-600'); }
 
-            // --- UPDATE DOM HARIAN ---
             const elHarianOmzet = document.getElementById('dash-harian-omzet');
             if (elHarianOmzet) {
                 let percentHarian = targetHarian > 0 ? (omzetHariIni / targetHarian) * 100 : 0;
