@@ -1,0 +1,21 @@
+{
+  "name": "Paint CRM",
+  "short_name": "Paint CRM",
+  "description": "Modern Paint CRM untuk Manajemen Penjualan",
+  "start_url": "./index_20.html",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
